@@ -53,7 +53,10 @@ export default async function Page() {
             </>
           ) : (
             <>
-              <Link href="/login" className={buttonVariants({ size: "lg" })}>
+              <Link
+                href="/login?tab=signup"
+                className={buttonVariants({ size: "lg" })}
+              >
                 Get started
                 <ArrowRight className="ml-1 h-4 w-4" />
               </Link>
