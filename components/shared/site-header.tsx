@@ -1,4 +1,4 @@
-import { getTranslations } from "next-intl/server"
+import { getLocale, getTranslations } from "next-intl/server"
 
 import { Link } from "@/i18n/navigation"
 import { createClient } from "@/lib/supabase/server"
@@ -16,6 +16,7 @@ import { Button, buttonVariants } from "@/components/ui/button"
  */
 export async function SiteHeader() {
   const t = await getTranslations("nav")
+  const locale = await getLocale()
 
   const supabase = await createClient()
   const {
@@ -55,7 +56,7 @@ export async function SiteHeader() {
               >
                 {t("profile")}
               </Link>
-              <form action="/auth/signout" method="post">
+              <form action={`/auth/signout?locale=${locale}`} method="post">
                 <Button type="submit" variant="outline" size="sm">
                   {t("signOut")}
                 </Button>

@@ -34,9 +34,13 @@ export const config = {
     /*
      * Match all request paths except:
      * - api routes (own auth handling)
+     * - auth routes (non-localized Supabase handlers: signout, confirm).
+     *   Excluded so next-intl does not locale-redirect them into the
+     *   `[locale]` segment, where no route exists (a 307 -> 404 on the
+     *   sign-out form POST).
      * - _next/static, _next/image (Next assets)
      * - favicon.ico, public image files
      */
-    "/((?!api|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    "/((?!api|auth|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 }

@@ -3,14 +3,15 @@ import { defineRouting } from "next-intl/routing"
 /**
  * App routing configuration for next-intl.
  *
- * Two locales: Hebrew (default, RTL) and English (LTR). `localeDetection` lets
+ * Two locales: English (default, LTR) and Hebrew (RTL). `localeDetection` lets
  * the middleware pick a locale from the `Accept-Language` header on a visitor's
- * first request, after which the choice is persisted in a cookie. Locale is
- * carried in the URL via the `[locale]` segment (e.g. `/he/menu`, `/en/menu`).
+ * first request, after which the choice is persisted in a cookie; only when no
+ * language preference is signalled does the default (English) apply. Locale is
+ * carried in the URL via the `[locale]` segment (e.g. `/en/menu`, `/he/menu`).
  */
 export const routing = defineRouting({
-  locales: ["he", "en"],
-  defaultLocale: "he",
+  locales: ["en", "he"],
+  defaultLocale: "en",
   localeDetection: true,
 })
 
