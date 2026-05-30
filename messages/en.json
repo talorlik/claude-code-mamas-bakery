@@ -185,19 +185,14 @@
   },
   "orders": {
     "title": "My Orders",
-    "heading": "Find Your Orders",
-    "description": "Look up your orders by phone or email.",
-    "lookupLabel": "Phone or email",
-    "lookupPlaceholder": "you@example.com or 050-123-4567",
-    "search": "Search",
-    "searching": "Searching…",
-    "noResults": "No orders found for that phone or email.",
+    "heading": "My Orders",
+    "description": "Your order history.",
+    "empty": "You have no orders yet.",
     "orderedOn": "Ordered",
     "pickupOn": "Pickup",
     "total": "Total",
     "status": "Status",
-    "payment": "Payment",
-    "error": "Enter a phone number or email to search."
+    "payment": "Payment"
   },
   "adminProducts": {
     "title": "Products",

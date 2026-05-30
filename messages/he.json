@@ -185,19 +185,14 @@
   },
   "orders": {
     "title": "ההזמנות שלי",
-    "heading": "מצאו את ההזמנות שלכם",
-    "description": "חפשו את ההזמנות שלכם לפי טלפון או אימייל.",
-    "lookupLabel": "טלפון או אימייל",
-    "lookupPlaceholder": "you@example.com או 050-123-4567",
-    "search": "חיפוש",
-    "searching": "מחפש…",
-    "noResults": "לא נמצאו הזמנות לטלפון או לאימייל שהוזנו.",
+    "heading": "ההזמנות שלי",
+    "description": "היסטוריית ההזמנות שלך.",
+    "empty": "אין לך הזמנות עדיין.",
     "orderedOn": "הוזמן",
     "pickupOn": "איסוף",
     "total": "סך הכול",
     "status": "סטטוס",
-    "payment": "תשלום",
-    "error": "הזינו טלפון או אימייל לחיפוש."
+    "payment": "תשלום"
   },
   "adminProducts": {
     "title": "מוצרים",
