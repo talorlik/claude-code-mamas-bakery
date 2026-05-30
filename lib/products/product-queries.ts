@@ -22,6 +22,23 @@ export async function getAvailableProducts(): Promise<Product[]> {
 }
 
 /**
+ * Returns every product, available or not, newest first, for the admin list.
+ *
+ * The "Admins can read all products" RLS policy permits this for admin callers;
+ * the page is already guarded by `requireAdmin`, so non-admins never reach it.
+ */
+export async function getAllProducts(): Promise<Product[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("products")
+    .select("*")
+    .order("created_at", { ascending: false })
+
+  if (error || !data) return []
+  return data
+}
+
+/**
  * Returns the distinct categories present among available products, in the
  * canonical category order, for building menu filters.
  */
