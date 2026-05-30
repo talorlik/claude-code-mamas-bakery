@@ -80,7 +80,21 @@
     "dashboard": "Dashboard",
     "products": "Products",
     "orders": "Orders",
+    "customers": "Customers",
     "comingSoon": "Coming soon."
+  },
+  "adminCustomers": {
+    "title": "Customers",
+    "heading": "Customer Management",
+    "search": "Search name or email",
+    "email": "Email",
+    "name": "Name",
+    "joined": "Joined",
+    "adminBadge": "Admin",
+    "sendReset": "Send reset link",
+    "resetConfirm": "Send a password reset link to",
+    "resetSent": "Reset link sent.",
+    "empty": "No customers yet."
   },
   "menu": {
     "title": "Menu",

@@ -80,7 +80,21 @@
     "dashboard": "לוח בקרה",
     "products": "מוצרים",
     "orders": "הזמנות",
+    "customers": "לקוחות",
     "comingSoon": "בקרוב."
+  },
+  "adminCustomers": {
+    "title": "לקוחות",
+    "heading": "ניהול לקוחות",
+    "search": "חיפוש לפי שם או אימייל",
+    "email": "אימייל",
+    "name": "שם",
+    "joined": "הצטרף",
+    "adminBadge": "מנהל",
+    "sendReset": "שליחת קישור לאיפוס",
+    "resetConfirm": "לשלוח קישור לאיפוס סיסמה אל",
+    "resetSent": "קישור האיפוס נשלח.",
+    "empty": "אין לקוחות עדיין."
   },
   "menu": {
     "title": "תפריט",

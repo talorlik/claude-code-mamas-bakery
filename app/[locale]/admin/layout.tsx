@@ -42,6 +42,9 @@ export default async function AdminLayout({
           <Link href="/admin/orders" className="hover:underline">
             {t("orders")}
           </Link>
+          <Link href="/admin/customers" className="hover:underline">
+            {t("customers")}
+          </Link>
         </nav>
       </header>
       <main>{children}</main>

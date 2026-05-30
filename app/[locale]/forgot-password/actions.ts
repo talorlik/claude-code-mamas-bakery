@@ -1,26 +1,10 @@
 "use server"
 
 import { redirect } from "next/navigation"
-import { headers } from "next/headers"
 
 import { createClient } from "@/lib/supabase/server"
 import { isValidEmail } from "@/lib/orders/order-validation"
-
-/**
- * Resolves the absolute origin Supabase embeds in the recovery email link.
- * Mirrors the `signup` action: prefer the configured site URL, fall back to the
- * request host, and downgrade localhost to http.
- */
-async function resolveOrigin(): Promise<string> {
-  const h = await headers()
-  return (
-    process.env.NEXT_PUBLIC_SITE_URL ??
-    `https://${h.get("host") ?? "localhost:3000"}`.replace(
-      /^https:\/\/localhost/,
-      "http://localhost"
-    )
-  )
-}
+import { resolveOrigin } from "@/lib/utils/site-origin"
 
 /**
  * Sends a password-reset email via Supabase. The link routes through
