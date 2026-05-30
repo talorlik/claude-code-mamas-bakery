@@ -5,6 +5,7 @@ import { createClient } from "@/lib/supabase/server"
 import { isAdmin } from "@/lib/auth/roles"
 import { ThemeToggle } from "@/components/theme-toggle"
 import { LanguageSwitcher } from "@/components/shared/language-switcher"
+import { CartIndicator } from "@/components/cart/cart-indicator"
 import { Button, buttonVariants } from "@/components/ui/button"
 
 /**
@@ -32,9 +33,7 @@ export async function SiteHeader() {
           <Link href="/menu" className="hover:underline">
             {t("menu")}
           </Link>
-          <Link href="/cart" className="hover:underline">
-            {t("cart")}
-          </Link>
+          <CartIndicator />
           <Link href="/orders" className="hover:underline">
             {t("orders")}
           </Link>

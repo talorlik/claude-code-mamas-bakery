@@ -6,7 +6,9 @@ import { setRequestLocale, getTranslations } from "next-intl/server"
 
 import "../globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
+import { CartProvider } from "@/components/cart/cart-provider"
 import { SiteHeader } from "@/components/shared/site-header"
+import { Toaster } from "@/components/ui/sonner"
 import { routing, LOCALE_DIRECTION, type AppLocale } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
 
@@ -68,8 +70,14 @@ export default async function LocaleLayout({
       <body>
         <NextIntlClientProvider>
           <ThemeProvider>
-            <SiteHeader />
-            {children}
+            <CartProvider>
+              <SiteHeader />
+              {children}
+              <Toaster
+                richColors
+                position={dir === "rtl" ? "top-left" : "top-right"}
+              />
+            </CartProvider>
           </ThemeProvider>
         </NextIntlClientProvider>
       </body>
