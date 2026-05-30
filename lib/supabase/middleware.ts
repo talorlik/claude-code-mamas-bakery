@@ -79,8 +79,9 @@ export async function updateSession(
   } = await supabase.auth.getUser()
 
   // Only a few routes require a session. Everything else - the menu, cart,
-  // order lookup, login, auth handlers - is public, so guests can browse and
-  // order. Expressed as a protected allowlist so new public pages are not
+  // login, auth handlers - is public, so guests can browse and build a cart.
+  // Order viewing is private: /orders shows the signed-in user's own orders.
+  // Expressed as a protected allowlist so new public pages are not
   // accidentally gated.
   const pathname = stripLocale(request.nextUrl.pathname)
   const isProtected =
@@ -88,6 +89,8 @@ export async function updateSession(
     pathname.startsWith("/admin/") ||
     pathname === "/profile" ||
     pathname.startsWith("/profile/") ||
+    pathname === "/orders" ||
+    pathname.startsWith("/orders/") ||
     pathname === "/chat"
 
   if (!user && isProtected) {
