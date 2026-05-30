@@ -81,13 +81,22 @@ Remove, after a final reference check at implementation time:
 
 - `lib/orders/order-lookup.ts` (the `lookupOrders` server action).
 - `app/[locale]/orders/orders-lookup.tsx` (the `OrdersLookup` client form).
-- `validateLookup` in `lib/orders/order-validation.ts`. Verified to be imported
-  only by `order-lookup.ts`; remove it (and any now-unused imports it leaves
-  behind in `order-validation.ts`). Leave the rest of `order-validation.ts`
-  untouched.
+- `validateLookup` in `lib/orders/order-validation.ts`. It is imported only by
+  `order-lookup.ts` and its own unit test (verified). Remove the function and
+  the now-orphaned `LookupQuery` type. Its only consumers of `isValidEmail` /
+  `normalizePhone` outside lookup are `validateOrderCustomer`, so those two
+  helpers stay. Leave the rest of `order-validation.ts` untouched.
 
-No `__tests__` or `e2e` file references these symbols (verified), so no test
-deletions are required for the removal itself.
+Three test files reference the removed behavior and must be updated:
+
+- `__tests__/unit/order-lookup-validation.test.ts` - tests `validateLookup`.
+  Delete the file.
+- `__tests__/integration/order-lookup.test.ts` - tests `lookupOrders`. Delete
+  the file.
+- `e2e/customer-order.spec.ts:75-86` - the "order lookup with a non-matching
+  email shows no results" test drives the phone/email form on `/orders`.
+  Replace it with a test asserting a signed-out visit to `/en/orders` redirects
+  to `/en/login` (see Testing below).
 
 ### 4. Gate the nav link
 
@@ -140,10 +149,14 @@ User -> GET /he/orders
 - Unit: middleware allowlist - assert `/orders` and `/orders/sub` are protected
   (guest -> redirect) and pass through for an authenticated user, alongside the
   existing protected-route assertions if present.
-- E2E (`e2e/`, English locale):
-  - Signed-out visit to `/orders` redirects to `/login`.
-  - Signed-in user sees their own orders and the "My Orders" nav link.
-  - Signed-out header does not render the "My Orders" link.
+- E2E (`e2e/customer-order.spec.ts`, English locale):
+  - Replace the deleted lookup test with: signed-out visit to `/en/orders`
+    redirects to `/en/login`.
+  - Extend the existing authenticated-order test (which already asserts the
+    placed order appears at `/en/profile`) or add a sibling assertion that the
+    signed-in user sees the order at `/en/orders` and that the "My Orders" nav
+    link is visible. The signed-out "checkout gated" test can additionally
+    assert the "My Orders" link is absent from the header.
 - Verification: `npm run typecheck` and `npm run test`. E2E requires a working
   Supabase connection and admin credentials (per `docs/TESTING.md`) and is not
   part of the default loop.
