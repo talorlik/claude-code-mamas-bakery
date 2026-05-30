@@ -1,0 +1,61 @@
+{
+  "common": {
+    "appName": "Mom's Bread",
+    "loading": "Loading…",
+    "empty": "Nothing here yet.",
+    "error": "Something went wrong.",
+    "retry": "Try again",
+    "backToHome": "Back to home"
+  },
+  "nav": {
+    "home": "Home",
+    "menu": "Menu",
+    "cart": "Cart",
+    "orders": "My Orders",
+    "profile": "My Account",
+    "admin": "Admin",
+    "signIn": "Sign in",
+    "signOut": "Sign out",
+    "toggleTheme": "Toggle theme",
+    "language": "Language"
+  },
+  "home": {
+    "title": "Mom's Bread - Boutique Bakery Orders",
+    "description": "Order fresh challah, cakes, and sweets from Mom's Bread.",
+    "tagline": "Fresh from the oven, made to order.",
+    "browseMenu": "Browse the menu",
+    "getStarted": "Get started"
+  },
+  "auth": {
+    "welcome": "Welcome to Mom's Bread",
+    "subtitle": "Sign in to your account, or create a new one.",
+    "signIn": "Sign in",
+    "signUp": "Sign up",
+    "createAccount": "Create account",
+    "email": "Email",
+    "password": "Password",
+    "passwordHint": "At least 8 characters"
+  },
+  "profile": {
+    "title": "My Account",
+    "pastOrders": "Past orders",
+    "noOrders": "You have no orders yet.",
+    "accountSettings": "Account settings",
+    "contactDetails": "Contact details",
+    "fullName": "Full name",
+    "phone": "Phone",
+    "saveDetails": "Save details",
+    "emailSection": "Email",
+    "updateEmail": "Update email",
+    "passwordSection": "Password",
+    "newPassword": "New password",
+    "updatePassword": "Update password"
+  },
+  "admin": {
+    "title": "Admin",
+    "dashboard": "Dashboard",
+    "products": "Products",
+    "orders": "Orders",
+    "comingSoon": "Coming soon."
+  }
+}

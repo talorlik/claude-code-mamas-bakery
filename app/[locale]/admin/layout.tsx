@@ -1,6 +1,7 @@
 import type { Metadata } from "next"
-import Link from "next/link"
+import { getTranslations, setRequestLocale } from "next-intl/server"
 
+import { Link } from "@/i18n/navigation"
 import { requireAdmin } from "@/lib/auth/require-admin"
 
 /**
@@ -17,24 +18,29 @@ export const metadata: Metadata = {
  */
 export default async function AdminLayout({
   children,
+  params,
 }: {
   children: React.ReactNode
+  params: Promise<{ locale: string }>
 }) {
+  const { locale } = await params
+  setRequestLocale(locale)
   await requireAdmin()
+  const t = await getTranslations("admin")
 
   return (
     <div className="mx-auto flex min-h-svh max-w-5xl flex-col gap-6 px-4 py-8">
       <header className="flex flex-col gap-3 border-b pb-4">
-        <h1 className="text-2xl font-semibold">Admin</h1>
+        <h1 className="text-2xl font-semibold">{t("title")}</h1>
         <nav className="flex gap-4 text-sm">
           <Link href="/admin" className="hover:underline">
-            Dashboard
+            {t("dashboard")}
           </Link>
           <Link href="/admin/products" className="hover:underline">
-            Products
+            {t("products")}
           </Link>
           <Link href="/admin/orders" className="hover:underline">
-            Orders
+            {t("orders")}
           </Link>
         </nav>
       </header>

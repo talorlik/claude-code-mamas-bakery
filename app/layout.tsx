@@ -1,30 +1,16 @@
-import { Geist, Geist_Mono, Inter } from "next/font/google"
-
-import "./globals.css"
-import { ThemeProvider } from "@/components/theme-provider"
-import { cn } from "@/lib/utils";
-
-const inter = Inter({subsets:['latin'],variable:'--font-sans'})
-
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
-
+/**
+ * Root layout pass-through.
+ *
+ * The `<html>` and `<body>` elements, fonts, providers, and `lang`/`dir`
+ * attributes are owned by `app/[locale]/layout.tsx`, which has access to the
+ * resolved locale. This root layout only forwards children so that the
+ * non-localized route handlers under `app/api` and `app/auth` still have a
+ * valid root.
+ */
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode
-}>) {
-  return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={cn("antialiased", fontMono.variable, "font-sans", inter.variable)}
-    >
-      <body>
-        <ThemeProvider>{children}</ThemeProvider>
-      </body>
-    </html>
-  )
+}) {
+  return children
 }

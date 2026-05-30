@@ -1,0 +1,78 @@
+import type { Metadata } from "next"
+import { Geist_Mono, Inter } from "next/font/google"
+import { notFound } from "next/navigation"
+import { hasLocale, NextIntlClientProvider } from "next-intl"
+import { setRequestLocale, getTranslations } from "next-intl/server"
+
+import "../globals.css"
+import { ThemeProvider } from "@/components/theme-provider"
+import { SiteHeader } from "@/components/shared/site-header"
+import { routing, LOCALE_DIRECTION, type AppLocale } from "@/i18n/routing"
+import { cn } from "@/lib/utils"
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
+const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
+
+/**
+ * Pre-render both locales at build time.
+ */
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }))
+}
+
+/**
+ * Localized base metadata. Per-route pages extend this with their own titles.
+ */
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>
+}): Promise<Metadata> {
+  const { locale } = await params
+  const t = await getTranslations({ locale, namespace: "home" })
+  return {
+    title: { default: t("title"), template: `%s · ${t("title")}` },
+    description: t("description"),
+  }
+}
+
+export default async function LocaleLayout({
+  children,
+  params,
+}: {
+  children: React.ReactNode
+  params: Promise<{ locale: string }>
+}) {
+  const { locale } = await params
+  if (!hasLocale(routing.locales, locale)) {
+    notFound()
+  }
+
+  // Enable static rendering for this request.
+  setRequestLocale(locale)
+
+  const dir = LOCALE_DIRECTION[locale as AppLocale]
+
+  return (
+    <html
+      lang={locale}
+      dir={dir}
+      suppressHydrationWarning
+      className={cn(
+        "antialiased",
+        fontMono.variable,
+        "font-sans",
+        inter.variable
+      )}
+    >
+      <body>
+        <NextIntlClientProvider>
+          <ThemeProvider>
+            <SiteHeader />
+            {children}
+          </ThemeProvider>
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  )
+}

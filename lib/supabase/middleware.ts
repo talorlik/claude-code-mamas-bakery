@@ -1,8 +1,38 @@
-import { createServerClient } from "@supabase/ssr";
-import { NextResponse, type NextRequest } from "next/server";
+import { createServerClient } from "@supabase/ssr"
+import { NextResponse, type NextRequest } from "next/server"
 
-export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({ request });
+import { routing } from "@/i18n/routing"
+
+/**
+ * Strips a leading locale segment (e.g. `/he/profile` -> `/profile`) so route
+ * protection can be expressed against unprefixed paths. Returns `/` when the
+ * path is just the locale root.
+ */
+function stripLocale(pathname: string): string {
+  const segments = pathname.split("/")
+  if (
+    routing.locales.includes(segments[1] as (typeof routing.locales)[number])
+  ) {
+    const rest = "/" + segments.slice(2).join("/")
+    return rest === "/" ? "/" : rest.replace(/\/$/, "")
+  }
+  return pathname
+}
+
+/**
+ * Refreshes the Supabase session and enforces route protection, layering its
+ * cookies onto an existing response (the one produced by the next-intl
+ * middleware) so locale routing and auth cookies are emitted together.
+ *
+ * Protection is evaluated against the locale-stripped path: home, login, the
+ * auth handlers, the error page, and API routes are public; everything else
+ * requires a signed-in user and redirects to a locale-aware login otherwise.
+ */
+export async function updateSession(
+  request: NextRequest,
+  response: NextResponse
+): Promise<NextResponse> {
+  const supabaseResponse = response
 
   const supabase = createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -10,46 +40,46 @@ export async function updateSession(request: NextRequest) {
     {
       cookies: {
         getAll() {
-          return request.cookies.getAll();
+          return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          );
-          supabaseResponse = NextResponse.next({ request });
+            request.cookies.set(name, value)
+          )
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          );
+            supabaseResponse.cookies.set(name, value, options)
+          )
         },
       },
-    },
-  );
+    }
+  )
 
   // IMPORTANT: do not run code between createServerClient and getUser.
   // getUser refreshes the session if expired; skipping it risks random logouts.
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await supabase.auth.getUser()
 
-  // Route protection. Public routes: home, login, auth handlers, error page,
-  // and the page-level API gate handles its own 401. Everything else needs a user.
-  const { pathname } = request.nextUrl;
+  const pathname = stripLocale(request.nextUrl.pathname)
   const isPublic =
     pathname === "/" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/auth") ||
     pathname.startsWith("/error") ||
-    pathname.startsWith("/api"); // API routes return their own 401 — let them.
+    pathname.startsWith("/api")
 
   if (!user && !isPublic) {
-    const loginUrl = request.nextUrl.clone();
-    loginUrl.pathname = "/login";
-    loginUrl.searchParams.set(
-      "notice",
-      "Please sign in to continue.",
-    );
-    return NextResponse.redirect(loginUrl);
+    const loginUrl = request.nextUrl.clone()
+    // Preserve the active locale prefix when redirecting to login.
+    const segments = request.nextUrl.pathname.split("/")
+    const hasLocalePrefix = routing.locales.includes(
+      segments[1] as (typeof routing.locales)[number]
+    )
+    loginUrl.pathname = hasLocalePrefix ? `/${segments[1]}/login` : "/login"
+    loginUrl.search = ""
+    loginUrl.searchParams.set("notice", "Please sign in to continue.")
+    return NextResponse.redirect(loginUrl)
   }
 
-  return supabaseResponse;
+  return supabaseResponse
 }

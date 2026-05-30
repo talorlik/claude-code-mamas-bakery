@@ -1,0 +1,61 @@
+{
+  "common": {
+    "appName": "הלחם של אמא",
+    "loading": "טוען…",
+    "empty": "אין כאן עדיין כלום.",
+    "error": "משהו השתבש.",
+    "retry": "נסו שוב",
+    "backToHome": "חזרה לדף הבית"
+  },
+  "nav": {
+    "home": "בית",
+    "menu": "תפריט",
+    "cart": "סל קניות",
+    "orders": "ההזמנות שלי",
+    "profile": "החשבון שלי",
+    "admin": "ניהול",
+    "signIn": "התחברות",
+    "signOut": "התנתקות",
+    "toggleTheme": "החלפת מצב תצוגה",
+    "language": "שפה"
+  },
+  "home": {
+    "title": "הלחם של אמא - הזמנות ממאפייה בוטיק",
+    "description": "הזמינו חלות, עוגות וקינוחים טריים מהלחם של אמא.",
+    "tagline": "טרי מהתנור, מוכן בהזמנה.",
+    "browseMenu": "לתפריט",
+    "getStarted": "התחילו כאן"
+  },
+  "auth": {
+    "welcome": "ברוכים הבאים להלחם של אמא",
+    "subtitle": "התחברו לחשבון שלכם, או צרו חשבון חדש.",
+    "signIn": "התחברות",
+    "signUp": "הרשמה",
+    "createAccount": "יצירת חשבון",
+    "email": "אימייל",
+    "password": "סיסמה",
+    "passwordHint": "לפחות 8 תווים"
+  },
+  "profile": {
+    "title": "החשבון שלי",
+    "pastOrders": "הזמנות קודמות",
+    "noOrders": "אין לכם הזמנות עדיין.",
+    "accountSettings": "הגדרות חשבון",
+    "contactDetails": "פרטי קשר",
+    "fullName": "שם מלא",
+    "phone": "טלפון",
+    "saveDetails": "שמירת פרטים",
+    "emailSection": "אימייל",
+    "updateEmail": "עדכון אימייל",
+    "passwordSection": "סיסמה",
+    "newPassword": "סיסמה חדשה",
+    "updatePassword": "עדכון סיסמה"
+  },
+  "admin": {
+    "title": "ניהול",
+    "dashboard": "לוח בקרה",
+    "products": "מוצרים",
+    "orders": "הזמנות",
+    "comingSoon": "בקרוב."
+  }
+}

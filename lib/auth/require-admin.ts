@@ -1,4 +1,5 @@
-import { redirect } from "next/navigation"
+import { redirect } from "@/i18n/navigation"
+import { getLocale } from "next-intl/server"
 
 import { getCurrentUserRole } from "@/lib/auth/roles"
 
@@ -15,12 +16,15 @@ import { getCurrentUserRole } from "@/lib/auth/roles"
  */
 export async function requireAdmin(): Promise<string> {
   const { userId, isAdmin } = await getCurrentUserRole()
+  const locale = await getLocale()
 
   if (!userId) {
-    redirect("/login")
+    redirect({ href: "/login", locale })
+    throw new Error("unreachable") // redirect() halts; satisfies control flow.
   }
   if (!isAdmin) {
-    redirect("/")
+    redirect({ href: "/", locale })
+    throw new Error("unreachable")
   }
 
   return userId

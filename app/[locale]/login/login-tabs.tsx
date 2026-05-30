@@ -1,6 +1,6 @@
 "use client"
 
-import * as React from "react"
+import { useTranslations } from "next-intl"
 
 import { login, signup } from "./actions"
 import { Button } from "@/components/ui/button"
@@ -15,17 +15,20 @@ type Props = {
 }
 
 export function LoginTabs({ error, notice, defaultTab = "signin" }: Props) {
+  const t = useTranslations("auth")
+
   return (
     <Tabs defaultValue={defaultTab} className="w-full">
       <TabsList className="grid w-full grid-cols-2">
-        <TabsTrigger value="signin">Sign in</TabsTrigger>
-        <TabsTrigger value="signup">Sign up</TabsTrigger>
+        <TabsTrigger value="signin">{t("signIn")}</TabsTrigger>
+        <TabsTrigger value="signup">{t("signUp")}</TabsTrigger>
       </TabsList>
 
       <TabsContent value="signin" className="pt-4">
         <CredentialsForm
           action={login}
-          submitLabel="Sign in"
+          submitLabel={t("signIn")}
+          formId="signin"
           autoCompletePassword="current-password"
           error={error}
           notice={notice}
@@ -35,7 +38,8 @@ export function LoginTabs({ error, notice, defaultTab = "signin" }: Props) {
       <TabsContent value="signup" className="pt-4">
         <CredentialsForm
           action={signup}
-          submitLabel="Create account"
+          submitLabel={t("createAccount")}
+          formId="signup"
           autoCompletePassword="new-password"
           error={error}
           notice={notice}
@@ -48,22 +52,26 @@ export function LoginTabs({ error, notice, defaultTab = "signin" }: Props) {
 function CredentialsForm({
   action,
   submitLabel,
+  formId,
   autoCompletePassword,
   error,
   notice,
 }: {
   action: (formData: FormData) => Promise<void>
   submitLabel: string
+  formId: string
   autoCompletePassword: "current-password" | "new-password"
   error?: string
   notice?: string
 }) {
+  const t = useTranslations("auth")
+
   return (
     <form action={action} className="flex flex-col gap-4">
       <div className="grid gap-2">
-        <Label htmlFor={`email-${submitLabel}`}>Email</Label>
+        <Label htmlFor={`email-${formId}`}>{t("email")}</Label>
         <Input
-          id={`email-${submitLabel}`}
+          id={`email-${formId}`}
           name="email"
           type="email"
           autoComplete="email"
@@ -73,15 +81,15 @@ function CredentialsForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor={`password-${submitLabel}`}>Password</Label>
+        <Label htmlFor={`password-${formId}`}>{t("password")}</Label>
         <Input
-          id={`password-${submitLabel}`}
+          id={`password-${formId}`}
           name="password"
           type="password"
           autoComplete={autoCompletePassword}
           required
           minLength={8}
-          placeholder="At least 8 characters"
+          placeholder={t("passwordHint")}
         />
       </div>
 

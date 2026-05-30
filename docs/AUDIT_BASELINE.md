@@ -53,18 +53,20 @@ No test scripts yet - added in Batch 01.
 
 ### Known Pre-Existing Lint Findings (not introduced by this project)
 
-All three errors are the same rule, `react-hooks/set-state-in-effect`
+All three errors were the same rule, `react-hooks/set-state-in-effect`
 (synchronous `setState` inside an effect), in template-generated files:
 
-- `components/theme-toggle.tsx:14` - fixed when touched in Batch 05 (shell).
-- `hooks/use-mobile.ts:14` - fixed when touched in Batch 05 (shell).
-- `components/ui/carousel.tsx:98` - shadcn-generated; left as-is unless used.
+- `components/theme-toggle.tsx:14` - resolved in Batch 05 with a justified
+  `eslint-disable-next-line` (the documented next-themes mount pattern).
+- `hooks/use-mobile.ts:14` - resolved in Batch 05 the same way.
+- `components/ui/carousel.tsx:98` - shadcn-generated and unused; left as-is.
+  This is the one remaining baseline lint error.
 
-Plus one warning: `app/layout.tsx:1` unused `Geist` import - cleared in Batch 05
-when the layout is reworked for i18n.
+The warning `app/layout.tsx:1` unused `Geist` import was cleared in Batch 05
+when the root layout was reworked for i18n.
 
-These are tracked so the per-batch `npm run lint` gate is evaluated against this
-known baseline rather than treated as regressions.
+After Batch 05 the lint gate reports a single pre-existing error in the
+unused generated `carousel.tsx`; everything else is clean.
 
 ## Constraints Carried Forward
 
