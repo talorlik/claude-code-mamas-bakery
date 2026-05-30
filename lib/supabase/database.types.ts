@@ -236,6 +236,36 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      analytics_fulfillment_split: {
+        Args: never
+        Returns: {
+          fulfillment_method: Database["public"]["Enums"]["fulfillment_method"]
+          orders: number
+        }[]
+      }
+      analytics_orders_by_status: {
+        Args: never
+        Returns: {
+          orders: number
+          status: Database["public"]["Enums"]["order_status"]
+        }[]
+      }
+      analytics_revenue_by_day: {
+        Args: { p_days?: number }
+        Returns: {
+          day: string
+          orders: number
+          revenue: number
+        }[]
+      }
+      analytics_top_products: {
+        Args: { p_limit?: number }
+        Returns: {
+          product_name: string
+          quantity: number
+          revenue: number
+        }[]
+      }
       decrement_stock: {
         Args: { p_product_id: string; p_quantity: number }
         Returns: boolean

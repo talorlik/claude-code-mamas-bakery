@@ -89,7 +89,20 @@
     "products": "מוצרים",
     "orders": "הזמנות",
     "customers": "לקוחות",
+    "analytics": "אנליטיקה",
     "comingSoon": "בקרוב."
+  },
+  "adminAnalytics": {
+    "heading": "אנליטיקה",
+    "totalRevenue": "סך הכנסות",
+    "totalOrders": "סך הזמנות",
+    "revenueOverTime": "הכנסות (30 הימים האחרונים)",
+    "ordersByStatus": "הזמנות לפי סטטוס",
+    "topProducts": "מוצרים מובילים",
+    "fulfillmentSplit": "איסוף מול משלוח",
+    "pickup": "איסוף",
+    "delivery": "משלוח",
+    "noData": "אין נתונים עדיין."
   },
   "adminCustomers": {
     "title": "לקוחות",

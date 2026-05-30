@@ -115,6 +115,14 @@ let currentUser: { id: string; email: string } | null = {
 }
 let profileUpdate: Record<string, unknown> | null = null
 
+// next/headers and rate limiting are not available outside a request; stub them.
+vi.mock("next/headers", () => ({
+  headers: async () => new Headers(),
+}))
+vi.mock("@/lib/rate-limit/limiter", () => ({
+  checkRateLimit: async () => ({ success: true, retryAfter: 0 }),
+}))
+
 vi.mock("@/lib/supabase/server", () => ({
   createClient: async () => ({
     auth: { getUser: async () => ({ data: { user: currentUser } }) },

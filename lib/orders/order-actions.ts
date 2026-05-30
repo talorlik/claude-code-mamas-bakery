@@ -4,6 +4,7 @@ import { createClient, createAdminClient } from "@/lib/supabase/server"
 import type { ActionResult } from "@/lib/types/action-result"
 import { fail, ok } from "@/lib/types/action-result"
 import type { OrderCustomerInput } from "@/lib/orders/order-types"
+import { headers } from "next/headers"
 import { getLocale } from "next-intl/server"
 
 import { validateOrderCustomer } from "@/lib/orders/order-validation"
@@ -12,6 +13,8 @@ import { getCarrier } from "@/lib/delivery/carriers"
 import type { Locale } from "@/lib/orders/order-formatting"
 import { sendEmail } from "@/lib/email/send"
 import { renderOrderConfirmation } from "@/lib/email/templates/order-emails"
+import { checkRateLimit } from "@/lib/rate-limit/limiter"
+import { clientIpFromHeaders } from "@/lib/rate-limit/client-ip"
 
 /** A cart line as submitted by the client: only id and quantity are trusted. */
 export interface OrderLineInput {
@@ -44,6 +47,15 @@ export async function createOrder(
   customer: OrderCustomerInput,
   lines: OrderLineInput[]
 ): Promise<ActionResult<{ orderNumber: string }>> {
+  // Defense in depth: the proxy rate-limits the /cart POST, but Server Actions
+  // can be invoked directly, so re-check here. No-ops without Upstash configured.
+  const requestHeaders = await headers()
+  const ip = clientIpFromHeaders(requestHeaders)
+  const limit = await checkRateLimit("order", ip)
+  if (!limit.success) {
+    return fail("Too many orders. Please wait a moment and try again.")
+  }
+
   // Accounts are mandatory to order. Establish the session up front and reject
   // unauthenticated submits; the UI also gates checkout, but this is the
   // authoritative check so the rule cannot be bypassed.

@@ -89,7 +89,20 @@
     "products": "Products",
     "orders": "Orders",
     "customers": "Customers",
+    "analytics": "Analytics",
     "comingSoon": "Coming soon."
+  },
+  "adminAnalytics": {
+    "heading": "Analytics",
+    "totalRevenue": "Total revenue",
+    "totalOrders": "Total orders",
+    "revenueOverTime": "Revenue (last 30 days)",
+    "ordersByStatus": "Orders by status",
+    "topProducts": "Top products",
+    "fulfillmentSplit": "Pickup vs delivery",
+    "pickup": "Pickup",
+    "delivery": "Delivery",
+    "noData": "No data yet."
   },
   "adminCustomers": {
     "title": "Customers",
