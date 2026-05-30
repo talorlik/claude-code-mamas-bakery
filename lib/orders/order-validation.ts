@@ -25,6 +25,43 @@ export function normalizePhone(phone: string): string {
 }
 
 /**
+ * The classified result of an order-lookup query: either an exact email or a
+ * normalized phone number to match against.
+ */
+export type LookupQuery =
+  | { kind: "email"; value: string }
+  | { kind: "phone"; value: string }
+
+/**
+ * Validates and classifies a customer order-lookup input.
+ *
+ * An input containing `@` is treated as an email and must be well-formed; the
+ * email is lowercased. Otherwise it is treated as a phone number and must
+ * normalize to at least 7 digits. Returns an error for blank or malformed
+ * input so the lookup never runs an over-broad query.
+ */
+export function validateLookup(raw: string): ActionResult<LookupQuery> {
+  const input = raw.trim()
+  if (!input) {
+    return fail("Enter a phone number or email.")
+  }
+
+  if (input.includes("@")) {
+    if (!isValidEmail(input)) {
+      return fail("Enter a valid email address.")
+    }
+    return ok({ kind: "email", value: input.toLowerCase() })
+  }
+
+  const phone = normalizePhone(input)
+  const digits = phone.replace(/\D/g, "")
+  if (digits.length < 7) {
+    return fail("Enter a valid phone number.")
+  }
+  return ok({ kind: "phone", value: phone })
+}
+
+/**
  * Returns today's date as a `YYYY-MM-DD` string in UTC, for comparing against
  * a date-only pickup value without timezone drift.
  */
