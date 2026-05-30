@@ -60,3 +60,6 @@ Thumbs.db
 # secrets and local scratch files
 *.pem
 context-practice-files/
+
+# Supabase CLI local session state
+supabase/.temp/

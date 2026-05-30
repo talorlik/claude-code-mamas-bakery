@@ -1,0 +1,47 @@
+project_id = "urgytvlzcisyhivhhdgi"
+
+# This file is intentionally a faithful mirror of the remote auth config, not a
+# fresh scaffold. `supabase config push` fills any omitted [auth] key with CLI
+# defaults, which would silently overwrite dashboard-set values (MFA, signup
+# confirmation, redirect allow-list). Every value below was read back from the
+# remote with `config push` (diff) on 2026-05-30 so the push is a no-op except
+# for the one change we intend: the recovery email template.
+
+[auth]
+site_url = "https://claude-code-mamas-bakery.vercel.app"
+# Preserve the Vercel preview-deploy wildcard; dropping it breaks auth
+# redirects on preview URLs.
+additional_redirect_urls = [
+  "https://claude-code-mamas-bakery.vercel.app/**",
+  "https://claude-code-mamas-bakery-*.vercel.app/**",
+  "http://localhost:3000/**",
+]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
+[auth.email]
+enable_signup = true
+double_confirm_changes = true
+# Must stay true: this is what makes signup send a confirmation email at all.
+enable_confirmations = true
+secure_password_change = false
+max_frequency = "1m0s"
+otp_length = 8
+otp_expiry = 3600
+
+# Already correct on remote (token_hash form); mirrored here so the push does
+# not revert it to a CLI default.
+[auth.email.template.confirmation]
+subject = "Confirm your email address"
+content_path = "./supabase/templates/confirmation.html"
+
+# THE FIX. Remote still emits the legacy {{ .ConfirmationURL }} (/auth/v1/verify)
+# link, which /auth/confirm cannot consume and a mail prefetcher can burn before
+# the user clicks. The token_hash form lets our handler call verifyOtp itself.
+[auth.email.template.recovery]
+subject = "Reset your password"
+content_path = "./supabase/templates/recovery.html"
