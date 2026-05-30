@@ -132,7 +132,7 @@ export async function signup(formData: FormData) {
 
   const captchaToken = readCaptchaToken(formData)
   const supabase = await createClient()
-  const { error } = await supabase.auth.signUp({
+  const { data, error } = await supabase.auth.signUp({
     email: creds.email,
     password: creds.password,
     options: {
@@ -145,7 +145,17 @@ export async function signup(formData: FormData) {
     redirect(`/login?tab=signup&error=${encodeURIComponent(error.message)}`)
   }
 
-  redirect(
-    `/login?notice=${encodeURIComponent("Check your email to confirm your account.")}`
-  )
+  // When the email already belongs to an account, Supabase (with email
+  // confirmation on and anti-enumeration enabled) returns success with an
+  // obfuscated user whose `identities` array is empty, and sends no new
+  // confirmation email. Promising "check your email" in that case strands the
+  // user waiting for a mail that will never arrive. Keep the notice generic so
+  // it neither confirms nor denies that the address is registered, while
+  // remaining accurate when no email was sent.
+  const alreadyRegistered = data.user?.identities?.length === 0
+  const notice = alreadyRegistered
+    ? "If this is a new account, check your email to confirm it. If you already have an account, sign in or reset your password."
+    : "Check your email to confirm your account."
+
+  redirect(`/login?notice=${encodeURIComponent(notice)}`)
 }
