@@ -1,18 +1,18 @@
-"use client";
+"use client"
 
-import * as React from "react";
+import * as React from "react"
 
-import { login, signup } from "./actions";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { login, signup } from "./actions"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
 
 type Props = {
-  error?: string;
-  notice?: string;
-  defaultTab?: "signin" | "signup";
-};
+  error?: string
+  notice?: string
+  defaultTab?: "signin" | "signup"
+}
 
 export function LoginTabs({ error, notice, defaultTab = "signin" }: Props) {
   return (
@@ -42,7 +42,7 @@ export function LoginTabs({ error, notice, defaultTab = "signin" }: Props) {
         />
       </TabsContent>
     </Tabs>
-  );
+  )
 }
 
 function CredentialsForm({
@@ -52,11 +52,11 @@ function CredentialsForm({
   error,
   notice,
 }: {
-  action: (formData: FormData) => Promise<void>;
-  submitLabel: string;
-  autoCompletePassword: "current-password" | "new-password";
-  error?: string;
-  notice?: string;
+  action: (formData: FormData) => Promise<void>
+  submitLabel: string
+  autoCompletePassword: "current-password" | "new-password"
+  error?: string
+  notice?: string
 }) {
   return (
     <form action={action} className="flex flex-col gap-4">
@@ -80,23 +80,23 @@ function CredentialsForm({
           type="password"
           autoComplete={autoCompletePassword}
           required
-          minLength={6}
-          placeholder="At least 6 characters"
+          minLength={8}
+          placeholder="At least 8 characters"
         />
       </div>
 
       {error ? (
-        <p className="text-destructive text-sm" role="alert">
+        <p className="text-sm text-destructive" role="alert">
           {error}
         </p>
       ) : null}
       {notice ? (
-        <p className="text-muted-foreground text-sm">{notice}</p>
+        <p className="text-sm text-muted-foreground">{notice}</p>
       ) : null}
 
       <Button type="submit" className="w-full">
         {submitLabel}
       </Button>
     </form>
-  );
+  )
 }
