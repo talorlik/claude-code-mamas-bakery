@@ -1,11 +1,17 @@
 "use client"
 
 import * as React from "react"
+import { Croissant, Trash2, Upload } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { toast } from "sonner"
 
 import type { Product, ProductInput } from "@/lib/products/product-types"
 import { PRODUCT_CATEGORIES } from "@/lib/products/product-types"
 import { categoryLabel } from "@/lib/products/product-formatting"
+import {
+  uploadProductImage,
+  removeProductImage,
+} from "@/lib/products/product-image-actions"
 import type { Locale } from "@/lib/orders/order-formatting"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -38,6 +44,39 @@ export function ProductForm({
   const [isAvailable, setIsAvailable] = React.useState(
     product?.is_available ?? true
   )
+  // The current image URL is tracked locally so upload/remove update the preview
+  // without closing the dialog. Seeded from the product when editing.
+  const [imageUrl, setImageUrl] = React.useState(product?.image_url ?? "")
+  const [uploading, setUploading] = React.useState(false)
+  const fileInputRef = React.useRef<HTMLInputElement>(null)
+
+  async function handleUpload(file: File) {
+    if (!product) return
+    setUploading(true)
+    const data = new FormData()
+    data.set("file", file)
+    const result = await uploadProductImage(product.id, data)
+    setUploading(false)
+    if (result.ok) {
+      setImageUrl(result.data.imageUrl)
+      toast.success(t("imageUploaded"))
+    } else {
+      toast.error(result.error)
+    }
+  }
+
+  async function handleRemoveImage() {
+    if (!product) return
+    setUploading(true)
+    const result = await removeProductImage(product.id)
+    setUploading(false)
+    if (result.ok) {
+      setImageUrl("")
+      toast.success(t("imageRemoved"))
+    } else {
+      toast.error(result.error)
+    }
+  }
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -112,12 +151,75 @@ export function ProductForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor="imageUrl">{t("imageUrl")}</Label>
+        <Label>{t("image")}</Label>
+        <div className="flex items-center gap-3">
+          <div className="relative h-16 w-16 shrink-0 overflow-hidden rounded-md bg-muted">
+            {imageUrl ? (
+              // Plain img: the Storage public URL host is not in next.config's
+              // remote allowlist, and manual external URLs are arbitrary.
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={imageUrl}
+                alt=""
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center text-muted-foreground">
+                <Croissant className="h-6 w-6" aria-hidden />
+              </div>
+            )}
+          </div>
+
+          {product ? (
+            <div className="flex flex-wrap gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/jpeg,image/png,image/webp"
+                className="hidden"
+                onChange={(e) => {
+                  const file = e.target.files?.[0]
+                  if (file) handleUpload(file)
+                  e.target.value = ""
+                }}
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                disabled={uploading}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Upload className="me-1 h-4 w-4" />
+                {uploading ? t("uploading") : t("uploadImage")}
+              </Button>
+              {imageUrl ? (
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  disabled={uploading}
+                  onClick={handleRemoveImage}
+                >
+                  <Trash2 className="me-1 h-4 w-4" />
+                  {t("removeImage")}
+                </Button>
+              ) : null}
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground">{t("uploadAfterCreate")}</p>
+          )}
+        </div>
+
+        <Label htmlFor="imageUrl" className="mt-2 text-xs text-muted-foreground">
+          {t("imageUrl")}
+        </Label>
         <Input
           id="imageUrl"
           name="imageUrl"
           type="url"
-          defaultValue={product?.image_url ?? ""}
+          value={imageUrl}
+          onChange={(e) => setImageUrl(e.target.value)}
           placeholder="https://…"
         />
         {fieldErrors?.imageUrl ? (

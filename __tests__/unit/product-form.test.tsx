@@ -7,6 +7,15 @@ import { ProductForm } from "@/components/admin/product-form"
 import type { Product } from "@/lib/products/product-types"
 import enMessages from "@/messages/en.json"
 
+// The form imports the image server actions, which transitively pull in
+// server-only modules (require-admin -> next-intl navigation) that do not load
+// under jsdom. This is a UI test; stub the actions so only the form renders.
+// vi.mock is hoisted above the imports, so ProductForm picks up the stub.
+vi.mock("@/lib/products/product-image-actions", () => ({
+  uploadProductImage: vi.fn(),
+  removeProductImage: vi.fn(),
+}))
+
 const product: Product = {
   id: "p1",
   name: "Classic Challah",

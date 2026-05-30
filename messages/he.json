@@ -104,7 +104,9 @@
     "added": "נוסף לסל",
     "empty": "אין מוצרים זמינים כרגע. חזרו בקרוב.",
     "allCategories": "הכול",
-    "from": "מ-"
+    "from": "מ-",
+    "searchPlaceholder": "חיפוש לפי שם או תיאור",
+    "noResults": "אין מוצרים התואמים לחיפוש שלך."
   },
   "cart": {
     "title": "סל קניות",
@@ -164,7 +166,14 @@
     "description": "תיאור",
     "price": "מחיר",
     "category": "קטגוריה",
+    "image": "תמונה",
     "imageUrl": "כתובת תמונה",
+    "uploadImage": "העלאת תמונה",
+    "uploading": "מעלה…",
+    "removeImage": "הסרה",
+    "uploadAfterCreate": "שמרו תחילה את המוצר, ולאחר מכן ערכו אותו כדי להעלות תמונה.",
+    "imageUploaded": "התמונה הועלתה.",
+    "imageRemoved": "התמונה הוסרה.",
     "save": "שמירה",
     "saving": "שומר…",
     "cancel": "ביטול",

@@ -104,7 +104,9 @@
     "added": "Added to cart",
     "empty": "No products are available right now. Check back soon.",
     "allCategories": "All",
-    "from": "from"
+    "from": "from",
+    "searchPlaceholder": "Search by name or description",
+    "noResults": "No products match your search."
   },
   "cart": {
     "title": "Cart",
@@ -164,7 +166,14 @@
     "description": "Description",
     "price": "Price",
     "category": "Category",
+    "image": "Image",
     "imageUrl": "Image URL",
+    "uploadImage": "Upload image",
+    "uploading": "Uploading…",
+    "removeImage": "Remove",
+    "uploadAfterCreate": "Save the product first, then edit it to upload an image.",
+    "imageUploaded": "Image uploaded.",
+    "imageRemoved": "Image removed.",
     "save": "Save",
     "saving": "Saving…",
     "cancel": "Cancel",
