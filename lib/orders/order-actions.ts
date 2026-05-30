@@ -4,9 +4,14 @@ import { createClient, createAdminClient } from "@/lib/supabase/server"
 import type { ActionResult } from "@/lib/types/action-result"
 import { fail, ok } from "@/lib/types/action-result"
 import type { OrderCustomerInput } from "@/lib/orders/order-types"
+import { getLocale } from "next-intl/server"
+
 import { validateOrderCustomer } from "@/lib/orders/order-validation"
 import { generateOrderNumber } from "@/lib/orders/order-number"
 import { getCarrier } from "@/lib/delivery/carriers"
+import type { Locale } from "@/lib/orders/order-formatting"
+import { sendEmail } from "@/lib/email/send"
+import { renderOrderConfirmation } from "@/lib/email/templates/order-emails"
 
 /** A cart line as submitted by the client: only id and quantity are trusted. */
 export interface OrderLineInput {
@@ -39,6 +44,17 @@ export async function createOrder(
   customer: OrderCustomerInput,
   lines: OrderLineInput[]
 ): Promise<ActionResult<{ orderNumber: string }>> {
+  // Accounts are mandatory to order. Establish the session up front and reject
+  // unauthenticated submits; the UI also gates checkout, but this is the
+  // authoritative check so the rule cannot be bypassed.
+  const supabase = await createClient()
+  const {
+    data: { user },
+  } = await supabase.auth.getUser()
+  if (!user) {
+    return fail("Please sign in to place your order.")
+  }
+
   const validation = validateOrderCustomer(customer)
   if (!validation.ok) return validation
 
@@ -106,12 +122,6 @@ export async function createOrder(
   const deliveryFee = carrier ? carrier.flatFee : 0
   total = round2(total + deliveryFee)
 
-  // Link the order to the signed-in user, if any (guests allowed).
-  const supabase = await createClient()
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
   // Insert the order, retrying on the rare order-number collision.
   let orderId: string | null = null
   let orderNumber = ""
@@ -121,10 +131,11 @@ export async function createOrder(
       .from("orders")
       .insert({
         order_number: orderNumber,
-        user_id: user?.id ?? null,
+        user_id: user.id,
         customer_name: validation.data.fullName,
         customer_phone: validation.data.phone,
-        customer_email: validation.data.email,
+        // Email is taken from the authenticated account, not the form.
+        customer_email: user.email ?? validation.data.email,
         pickup_date: validation.data.pickupDate,
         notes: validation.data.notes || null,
         total_amount: total,
@@ -190,7 +201,7 @@ export async function createOrder(
 
   // Persist the delivery address onto the signed-in user's profile so it is
   // prefilled next time. Best-effort: a failure here must not fail the order.
-  if (user && isDelivery && validation.data.address) {
+  if (isDelivery && validation.data.address) {
     await supabase
       .from("profiles")
       .update({
@@ -200,6 +211,36 @@ export async function createOrder(
         postal_code: validation.data.address.postalCode,
       })
       .eq("user_id", user.id)
+  }
+
+  // Send the order-confirmation email. Fire-and-forget and fully guarded: an
+  // email (or locale-resolution) failure must not fail an order already
+  // committed to the database.
+  const recipient = user.email ?? validation.data.email
+  if (recipient) {
+    try {
+      const locale = ((await getLocale()) as Locale) ?? "en"
+      const email = renderOrderConfirmation(
+        {
+          orderNumber,
+          customerName: validation.data.fullName,
+          status: "New",
+          fulfillmentMethod: validation.data.fulfillmentMethod,
+          date: validation.data.pickupDate,
+          items: items.map((i) => ({
+            productName: i.product_name,
+            quantity: i.quantity,
+            lineTotal: i.line_total,
+          })),
+          deliveryFee,
+          total,
+        },
+        locale
+      )
+      await sendEmail(recipient, email)
+    } catch (err) {
+      console.error("[order] confirmation email failed:", err)
+    }
   }
 
   return ok({ orderNumber })

@@ -10,7 +10,7 @@ import { createOrder } from "@/lib/orders/order-actions"
 import { formatPrice } from "@/lib/utils/format"
 import { useCart } from "@/components/cart/cart-provider"
 import { CartItemRow } from "@/components/cart/cart-item-row"
-import { OrderForm } from "@/components/cart/order-form"
+import { OrderForm, type OrderFormDefaults } from "@/components/cart/order-form"
 import { EmptyState } from "@/components/shared/states"
 import { buttonVariants } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -22,7 +22,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
  * On success it shows a confirmation with the order number and clears the
  * cart; on validation failure it surfaces per-field errors from the server.
  */
-export function CartView() {
+export function CartView({
+  isAuthenticated,
+  defaults,
+}: {
+  isAuthenticated: boolean
+  defaults?: OrderFormDefaults
+}) {
   const t = useTranslations("cart")
   const { cart, hydrated, total, clear } = useCart()
   const [pending, setPending] = React.useState(false)
@@ -110,16 +116,34 @@ export function CartView() {
             <CardTitle>{t("orderDetails")}</CardTitle>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <OrderForm
-              onSubmit={handleSubmit}
-              pending={pending}
-              fieldErrors={fieldErrors}
-            />
-            {formError ? (
-              <p className="text-sm text-destructive" role="alert">
-                {formError}
-              </p>
-            ) : null}
+            {isAuthenticated ? (
+              <>
+                <OrderForm
+                  onSubmit={handleSubmit}
+                  pending={pending}
+                  fieldErrors={fieldErrors}
+                  defaults={defaults}
+                  emailReadOnly
+                />
+                {formError ? (
+                  <p className="text-sm text-destructive" role="alert">
+                    {formError}
+                  </p>
+                ) : null}
+              </>
+            ) : (
+              <div className="flex flex-col gap-3">
+                <p className="text-sm text-muted-foreground">
+                  {t("signInToOrder")}
+                </p>
+                <Link
+                  href="/login?redirect=/cart"
+                  className={buttonVariants()}
+                >
+                  {t("signIn")}
+                </Link>
+              </div>
+            )}
           </CardContent>
         </Card>
       </section>

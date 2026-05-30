@@ -2,24 +2,20 @@
 
 import * as React from "react"
 import { useTranslations } from "next-intl"
-import { toast } from "sonner"
 
+import { Link } from "@/i18n/navigation"
 import type { OrderStatus, OrderWithItems } from "@/lib/orders/order-types"
 import { ORDER_STATUSES } from "@/lib/orders/order-types"
 import { filterOrders } from "@/lib/orders/order-filters"
-import {
-  updateOrderStatus,
-  setOrderPaid,
-} from "@/lib/orders/order-admin-actions"
 import { orderStatusLabel, type Locale } from "@/lib/orders/order-formatting"
-import { getCarrier } from "@/lib/delivery/carriers"
 import { formatDate, formatPrice } from "@/lib/utils/format"
+import { OrderDetail } from "@/components/admin/order-detail"
 import {
   OrderStatusBadge,
   PaymentStatusBadge,
 } from "@/components/orders/order-badges"
 import { EmptyState } from "@/components/shared/states"
-import { Button } from "@/components/ui/button"
+import { Button, buttonVariants } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { NativeSelect } from "@/components/ui/native-select"
@@ -69,30 +65,11 @@ export function OrdersManager({
   })
   const selected = orders.find((o) => o.id === selectedId) ?? null
 
+  // Keep the list in sync when the detail panel mutates an order.
   function patchOrder(updated: { id: string } & Partial<OrderWithItems>) {
     setOrders((prev) =>
       prev.map((o) => (o.id === updated.id ? { ...o, ...updated } : o))
     )
-  }
-
-  async function handleStatus(order: OrderWithItems, next: OrderStatus) {
-    const result = await updateOrderStatus(order.id, next)
-    if (result.ok) {
-      patchOrder({ id: order.id, status: next })
-      toast.success(t("saved"))
-    } else {
-      toast.error(result.error)
-    }
-  }
-
-  async function handlePaid(order: OrderWithItems, next: boolean) {
-    const result = await setOrderPaid(order.id, next)
-    if (result.ok) {
-      patchOrder({ id: order.id, is_paid: next })
-      toast.success(t("saved"))
-    } else {
-      toast.error(result.error)
-    }
   }
 
   function clearFilters() {
@@ -189,13 +166,28 @@ export function OrdersManager({
                   <PaymentStatusBadge isPaid={order.is_paid} locale={locale} />
                 </TableCell>
                 <TableCell className="text-end">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedId(order.id)}
-                  >
-                    {t("details")}
-                  </Button>
+                  <div className="flex justify-end gap-1">
+                    {/* Desktop: open the drawer in place. */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="hidden sm:inline-flex"
+                      onClick={() => setSelectedId(order.id)}
+                    >
+                      {t("details")}
+                    </Button>
+                    {/* Mobile/deep-link: the full-page detail route. */}
+                    <Link
+                      href={`/admin/orders/${order.id}`}
+                      className={buttonVariants({
+                        variant: "ghost",
+                        size: "sm",
+                        className: "sm:hidden",
+                      })}
+                    >
+                      {t("details")}
+                    </Link>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -213,91 +205,12 @@ export function OrdersManager({
               <DrawerHeader>
                 <DrawerTitle>{selected.order_number}</DrawerTitle>
               </DrawerHeader>
-              <div className="flex flex-col gap-4 px-4 pb-8">
-                <div className="text-sm">
-                  <p className="font-medium">{selected.customer_name}</p>
-                  <p className="text-muted-foreground">
-                    {selected.customer_phone} · {selected.customer_email}
-                  </p>
-                  {selected.fulfillment_method === "delivery" ? (
-                    <>
-                      <p className="text-muted-foreground">
-                        {t("methodDelivery")}
-                        {selected.delivery_carrier
-                          ? ` · ${getCarrier(selected.delivery_carrier)?.name ?? selected.delivery_carrier}`
-                          : ""}
-                      </p>
-                      <p className="text-muted-foreground">
-                        {[
-                          selected.delivery_address_line1,
-                          selected.delivery_address_line2,
-                          selected.delivery_city,
-                          selected.delivery_postal_code,
-                        ]
-                          .filter(Boolean)
-                          .join(", ")}
-                      </p>
-                      <p className="text-muted-foreground">
-                        {t("deliveryDate")}: {formatDate(selected.pickup_date)}
-                      </p>
-                    </>
-                  ) : (
-                    <p className="text-muted-foreground">
-                      {t("methodPickup")}: {formatDate(selected.pickup_date)}
-                    </p>
-                  )}
-                  {selected.notes ? (
-                    <p className="mt-1">{selected.notes}</p>
-                  ) : null}
-                </div>
-
-                <ul className="text-sm">
-                  {selected.items.map((item) => (
-                    <li
-                      key={item.id}
-                      className="flex justify-between border-b py-1 last:border-b-0"
-                    >
-                      <span>
-                        {item.product_name} × {item.quantity}
-                      </span>
-                      <span>{formatPrice(item.line_total)}</span>
-                    </li>
-                  ))}
-                </ul>
-                {selected.delivery_fee > 0 ? (
-                  <div className="flex justify-between text-sm text-muted-foreground">
-                    <span>{t("deliveryFeeLabel")}</span>
-                    <span>{formatPrice(selected.delivery_fee)}</span>
-                  </div>
-                ) : null}
-                <div className="flex justify-between font-medium">
-                  <span>{t("total")}</span>
-                  <span>{formatPrice(selected.total_amount)}</span>
-                </div>
-
-                <div className="grid gap-1.5">
-                  <Label htmlFor="detail-status">{t("updateStatus")}</Label>
-                  <NativeSelect
-                    id="detail-status"
-                    value={selected.status}
-                    onChange={(e) =>
-                      handleStatus(selected, e.target.value as OrderStatus)
-                    }
-                  >
-                    {ORDER_STATUSES.map((s) => (
-                      <option key={s} value={s}>
-                        {orderStatusLabel(s, locale)}
-                      </option>
-                    ))}
-                  </NativeSelect>
-                </div>
-
-                <Button
-                  variant={selected.is_paid ? "outline" : "default"}
-                  onClick={() => handlePaid(selected, !selected.is_paid)}
-                >
-                  {selected.is_paid ? t("markUnpaid") : t("markPaid")}
-                </Button>
+              <div className="px-4 pb-8">
+                <OrderDetail
+                  order={selected}
+                  locale={locale}
+                  onChange={patchOrder}
+                />
               </div>
             </div>
           ) : null}

@@ -31,6 +31,31 @@ export async function getOrdersForUser(
 }
 
 /**
+ * Returns a single order with its line items by id, for the admin detail route.
+ *
+ * Reads through the server client; the "Admins can read orders" RLS policy
+ * gates it for admins, and the route is guarded by `requireAdmin`. Returns null
+ * when the order does not exist or is not readable.
+ */
+export async function getOrderById(
+  id: string
+): Promise<OrderWithItems | null> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*, order_items(*)")
+    .eq("id", id)
+    .maybeSingle()
+
+  if (error || !data) return null
+
+  const { order_items, ...order } = data as typeof data & {
+    order_items: OrderWithItems["items"]
+  }
+  return { ...order, items: order_items ?? [] }
+}
+
+/**
  * Returns every order, newest first, each with its line items, for the admin
  * order list.
  *

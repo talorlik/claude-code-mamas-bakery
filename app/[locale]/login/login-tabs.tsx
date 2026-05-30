@@ -13,9 +13,15 @@ type Props = {
   error?: string
   notice?: string
   defaultTab?: "signin" | "signup"
+  redirectTo?: string
 }
 
-export function LoginTabs({ error, notice, defaultTab = "signin" }: Props) {
+export function LoginTabs({
+  error,
+  notice,
+  defaultTab = "signin",
+  redirectTo,
+}: Props) {
   const t = useTranslations("auth")
 
   return (
@@ -33,6 +39,7 @@ export function LoginTabs({ error, notice, defaultTab = "signin" }: Props) {
           autoCompletePassword="current-password"
           error={error}
           notice={notice}
+          redirectTo={redirectTo}
           showSignInExtras
         />
       </TabsContent>
@@ -45,6 +52,7 @@ export function LoginTabs({ error, notice, defaultTab = "signin" }: Props) {
           autoCompletePassword="new-password"
           error={error}
           notice={notice}
+          redirectTo={redirectTo}
         />
       </TabsContent>
     </Tabs>
@@ -58,6 +66,7 @@ function CredentialsForm({
   autoCompletePassword,
   error,
   notice,
+  redirectTo,
   showSignInExtras = false,
 }: {
   action: (formData: FormData) => Promise<void>
@@ -66,12 +75,16 @@ function CredentialsForm({
   autoCompletePassword: "current-password" | "new-password"
   error?: string
   notice?: string
+  redirectTo?: string
   showSignInExtras?: boolean
 }) {
   const t = useTranslations("auth")
 
   return (
     <form action={action} className="flex flex-col gap-4">
+      {redirectTo ? (
+        <input type="hidden" name="redirect" value={redirectTo} />
+      ) : null}
       <div className="grid gap-2">
         <Label htmlFor={`email-${formId}`}>{t("email")}</Label>
         <Input

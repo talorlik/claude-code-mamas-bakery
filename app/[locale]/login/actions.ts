@@ -15,6 +15,19 @@ const MIN_PASSWORD_LENGTH = 8
 type Credentials = { email: string; password: string }
 
 /**
+ * Returns a safe in-app redirect target from a submitted form, or null.
+ *
+ * Only same-site, absolute-path values (starting with a single `/`) are
+ * allowed, preventing open-redirects to external hosts or protocol-relative
+ * URLs. Used to return the user to checkout after a sign-in prompted there.
+ */
+function safeRedirect(formData: FormData): string | null {
+  const raw = String(formData.get("redirect") ?? "").trim()
+  if (raw.startsWith("/") && !raw.startsWith("//")) return raw
+  return null
+}
+
+/**
  * Reads and server-side-validates credentials from a submitted form.
  *
  * Returns the normalized credentials, or a user-safe error string. Validation
@@ -76,7 +89,10 @@ export async function login(formData: FormData) {
   const admin = await isAdmin(data.user.id)
 
   revalidatePath("/", "layout")
-  redirect(admin ? "/admin" : "/profile")
+  // A safe redirect target (e.g. returning to checkout) wins over the role
+  // default; admins still fall through to /admin when no target is given.
+  const target = safeRedirect(formData)
+  redirect(target ?? (admin ? "/admin" : "/profile"))
 }
 
 /**

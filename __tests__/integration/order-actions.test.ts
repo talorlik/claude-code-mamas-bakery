@@ -107,9 +107,30 @@ function makeAdminClient() {
   }
 }
 
+// A signed-in user is required now that accounts are mandatory to order. The
+// authed client also exposes profiles for the post-order address save.
+let currentUser: { id: string; email: string } | null = {
+  id: "user-1",
+  email: "dana@example.com",
+}
+let profileUpdate: Record<string, unknown> | null = null
+
 vi.mock("@/lib/supabase/server", () => ({
   createClient: async () => ({
-    auth: { getUser: async () => ({ data: { user: null } }) },
+    auth: { getUser: async () => ({ data: { user: currentUser } }) },
+    from(table: string) {
+      if (table === "profiles") {
+        return {
+          update: (row: Record<string, unknown>) => ({
+            eq: async () => {
+              profileUpdate = row
+              return { error: null }
+            },
+          }),
+        }
+      }
+      throw new Error(`unexpected authed table ${table}`)
+    },
   }),
   createAdminClient: async () => makeAdminClient(),
 }))
@@ -143,6 +164,8 @@ beforeEach(() => {
   orderInsertFailUntilAttempt = 0
   itemInsertFails = false
   soldOutProductId = null
+  currentUser = { id: "user-1", email: "dana@example.com" }
+  profileUpdate = null
 })
 
 describe("createOrder", () => {
@@ -279,5 +302,48 @@ describe("createOrder", () => {
     expect(result.ok).toBe(false)
     expect(orderDeleteCalled).toBe(true)
     expect(incrementCalls).toEqual([{ product_id: "a", quantity: 2 }])
+  })
+
+  it("rejects an unauthenticated order (accounts are mandatory)", async () => {
+    currentUser = null
+    const result = await createOrder(customer, [
+      { productId: "a", quantity: 1 },
+    ])
+    expect(result.ok).toBe(false)
+    expect(insertedOrder).toBeNull()
+  })
+
+  it("links the order to the user and uses the account email", async () => {
+    currentUser = { id: "user-9", email: "account@example.com" }
+    const result = await createOrder(
+      { ...customer, email: "typed-in-form@example.com" },
+      [{ productId: "a", quantity: 1 }]
+    )
+    expect(result.ok).toBe(true)
+    expect(insertedOrder?.user_id).toBe("user-9")
+    // Email comes from the session, not the submitted form value.
+    expect(insertedOrder?.customer_email).toBe("account@example.com")
+  })
+
+  it("saves the delivery address to the profile for a signed-in user", async () => {
+    const result = await createOrder(
+      {
+        ...customer,
+        fulfillmentMethod: "delivery",
+        carrierId: "econo-demo",
+        address: {
+          addressLine1: "5 Baker St",
+          city: "Haifa",
+          postalCode: "30000",
+        },
+      },
+      [{ productId: "a", quantity: 1 }]
+    )
+    expect(result.ok).toBe(true)
+    expect(profileUpdate).toMatchObject({
+      address_line1: "5 Baker St",
+      city: "Haifa",
+      postal_code: "30000",
+    })
   })
 })

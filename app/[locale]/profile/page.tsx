@@ -56,7 +56,9 @@ export default async function ProfilePage({
   const [{ data: profile }, orders] = await Promise.all([
     supabase
       .from("profiles")
-      .select("full_name, phone")
+      .select(
+        "full_name, phone, address_line1, address_line2, city, postal_code"
+      )
       .eq("user_id", user.id)
       .maybeSingle(),
     getOrdersForUser(user.id),
@@ -127,6 +129,12 @@ export default async function ProfilePage({
         <AccountForms
           initialFullName={profile?.full_name ?? ""}
           initialPhone={profile?.phone ?? ""}
+          initialAddress={{
+            addressLine1: profile?.address_line1 ?? "",
+            addressLine2: profile?.address_line2 ?? "",
+            city: profile?.city ?? "",
+            postalCode: profile?.postal_code ?? "",
+          }}
           email={user.email ?? ""}
         />
       </section>

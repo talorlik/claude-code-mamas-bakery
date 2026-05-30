@@ -5,9 +5,11 @@ import { useTranslations } from "next-intl"
 
 import {
   updateProfile,
+  updateAddress,
   updateEmail,
   updatePassword,
 } from "@/lib/profile/profile-actions"
+import type { DeliveryAddressInput } from "@/lib/orders/order-types"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -29,10 +31,12 @@ type Feedback = { ok: boolean; message: string } | null
 export function AccountForms({
   initialFullName,
   initialPhone,
+  initialAddress,
   email,
 }: {
   initialFullName: string
   initialPhone: string
+  initialAddress: DeliveryAddressInput
   email: string
 }) {
   return (
@@ -41,9 +45,87 @@ export function AccountForms({
         initialFullName={initialFullName}
         initialPhone={initialPhone}
       />
+      <AddressForm initialAddress={initialAddress} />
       <EmailForm currentEmail={email} />
       <PasswordForm />
     </div>
+  )
+}
+
+function AddressForm({
+  initialAddress,
+}: {
+  initialAddress: DeliveryAddressInput
+}) {
+  const t = useTranslations("profile")
+  const [feedback, setFeedback] = React.useState<Feedback>(null)
+  const [pending, setPending] = React.useState(false)
+
+  async function onSubmit(formData: FormData) {
+    setPending(true)
+    const result = await updateAddress({
+      addressLine1: String(formData.get("addressLine1") ?? ""),
+      addressLine2: String(formData.get("addressLine2") ?? ""),
+      city: String(formData.get("city") ?? ""),
+      postalCode: String(formData.get("postalCode") ?? ""),
+    })
+    setPending(false)
+    setFeedback(
+      result.ok
+        ? { ok: true, message: t("addressSaved") }
+        : { ok: false, message: result.error }
+    )
+  }
+
+  return (
+    <Card>
+      <CardHeader>
+        <CardTitle>{t("addressSection")}</CardTitle>
+        <CardDescription>{t("addressDescription")}</CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form action={onSubmit} className="flex flex-col gap-4">
+          <div className="grid gap-2">
+            <Label htmlFor="addressLine1">{t("addressLine1")}</Label>
+            <Input
+              id="addressLine1"
+              name="addressLine1"
+              defaultValue={initialAddress.addressLine1}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="addressLine2">{t("addressLine2")}</Label>
+            <Input
+              id="addressLine2"
+              name="addressLine2"
+              defaultValue={initialAddress.addressLine2 ?? ""}
+            />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="grid gap-2">
+              <Label htmlFor="city">{t("city")}</Label>
+              <Input
+                id="city"
+                name="city"
+                defaultValue={initialAddress.city}
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="postalCode">{t("postalCode")}</Label>
+              <Input
+                id="postalCode"
+                name="postalCode"
+                defaultValue={initialAddress.postalCode}
+              />
+            </div>
+          </div>
+          <FormFeedback feedback={feedback} />
+          <Button type="submit" disabled={pending} className="w-fit">
+            {pending ? t("saving") : t("saveAddress")}
+          </Button>
+        </form>
+      </CardContent>
+    </Card>
   )
 }
 

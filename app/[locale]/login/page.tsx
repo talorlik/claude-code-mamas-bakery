@@ -20,7 +20,12 @@ export default async function LoginPage({
   searchParams,
 }: {
   params: Promise<{ locale: string }>
-  searchParams: Promise<{ error?: string; notice?: string; tab?: string }>
+  searchParams: Promise<{
+    error?: string
+    notice?: string
+    tab?: string
+    redirect?: string
+  }>
 }) {
   const { locale } = await params
   setRequestLocale(locale)
@@ -32,6 +37,11 @@ export default async function LoginPage({
 
   // Honor ?tab=signup so links from the landing page land on the right tab.
   const defaultTab = sp.tab === "signup" ? "signup" : "signin"
+  // Only a same-site path is forwarded as the post-login redirect target.
+  const redirectTo =
+    sp.redirect && sp.redirect.startsWith("/") && !sp.redirect.startsWith("//")
+      ? sp.redirect
+      : undefined
 
   return (
     <div className="flex min-h-svh items-center justify-center bg-background px-4 text-foreground">
@@ -45,6 +55,7 @@ export default async function LoginPage({
             error={sp.error}
             notice={sp.notice}
             defaultTab={defaultTab}
+            redirectTo={redirectTo}
           />
 
           <p className="mt-6 text-center text-xs text-muted-foreground">
