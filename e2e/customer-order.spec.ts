@@ -15,6 +15,10 @@ import { customerCredentials, loginAsCustomer } from "./helpers/auth"
 test("signed-out checkout is gated behind sign-in", async ({ page }) => {
   await page.goto("/en/menu")
   await expect(page.getByRole("heading", { name: /our menu/i })).toBeVisible()
+  // The My Orders link is hidden until the visitor signs in.
+  await expect(
+    page.getByRole("link", { name: /my orders/i })
+  ).toHaveCount(0)
 
   const addButtons = page.getByRole("button", { name: /add to cart/i })
   await expect(addButtons.first()).toBeVisible()
@@ -69,18 +73,14 @@ test.describe("authenticated order", () => {
     // The order shows up in the customer's own order history.
     await page.goto("/en/profile")
     await expect(page.getByText(orderNumber!)).toBeVisible({ timeout: 15_000 })
+
+    // The order also appears on the dedicated My Orders page.
+    await page.goto("/en/orders")
+    await expect(page.getByText(orderNumber!)).toBeVisible({ timeout: 15_000 })
   })
 })
 
-test("order lookup with a non-matching email shows no results", async ({
-  page,
-}) => {
+test("signed-out visit to /orders redirects to login", async ({ page }) => {
   await page.goto("/en/orders")
-  await page
-    .getByLabel(/phone or email/i)
-    .fill(`nobody+${Date.now()}@example.com`)
-  await page.getByRole("button", { name: /^search$/i }).click()
-  await expect(page.getByText(/no orders found/i)).toBeVisible({
-    timeout: 15_000,
-  })
+  await expect(page).toHaveURL(/\/en\/login/, { timeout: 15_000 })
 })
