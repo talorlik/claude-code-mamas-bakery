@@ -11,8 +11,8 @@ import { Button, buttonVariants } from "@/components/ui/button"
 /**
  * Top navigation shared across all pages. Server-rendered so it can reflect
  * the current auth and admin state: signed-out users see a Sign in link;
- * signed-in users see their account and a sign-out control; admins also see an
- * Admin link. Customer links (Home, Menu, Cart, My Orders) are always shown.
+ * signed-in users see their account, their orders, and a sign-out control;
+ * admins also see an Admin link. Home, Menu, and Cart are always shown.
  */
 export async function SiteHeader() {
   const t = await getTranslations("nav")
@@ -35,9 +35,11 @@ export async function SiteHeader() {
             {t("menu")}
           </Link>
           <CartIndicator />
-          <Link href="/orders" className="hover:underline">
-            {t("orders")}
-          </Link>
+          {user ? (
+            <Link href="/orders" className="hover:underline">
+              {t("orders")}
+            </Link>
+          ) : null}
           {admin ? (
             <Link href="/admin" className="hover:underline">
               {t("admin")}
