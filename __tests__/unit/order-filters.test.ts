@@ -1,30 +1,19 @@
 import { describe, expect, it } from "vitest"
 import { filterOrders } from "@/lib/orders/order-filters"
 import type { OrderWithItems } from "@/lib/orders/order-types"
+import { makeOrderWithItems } from "@/__tests__/helpers/fixtures"
 
-function order(overrides: Partial<OrderWithItems>): OrderWithItems {
-  return {
-    id: "o1",
-    order_number: "MB-1",
-    user_id: null,
+const orders: OrderWithItems[] = [
+  makeOrderWithItems({
+    id: "a",
     customer_name: "Dana Levi",
     customer_phone: "0501234567",
     customer_email: "dana@example.com",
     pickup_date: "2026-06-01",
-    notes: null,
-    total_amount: 50,
     status: "New",
-    is_paid: false,
-    created_at: "2026-05-30T00:00:00Z",
-    updated_at: "2026-05-30T00:00:00Z",
     items: [],
-    ...overrides,
-  }
-}
-
-const orders: OrderWithItems[] = [
-  order({ id: "a", customer_name: "Dana Levi", status: "New" }),
-  order({
+  }),
+  makeOrderWithItems({
     id: "b",
     customer_name: "Yossi Cohen",
     customer_email: "yossi@example.com",
@@ -32,6 +21,7 @@ const orders: OrderWithItems[] = [
     status: "Completed",
     pickup_date: "2026-06-02",
     is_paid: true,
+    items: [],
   }),
 ]
 

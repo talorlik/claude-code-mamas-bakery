@@ -20,6 +20,12 @@ type Product = {
 let products: Product[] = []
 let insertedOrder: Record<string, unknown> | null = null
 let insertedItems: Record<string, unknown>[] | null = null
+let orderInsertAttempts = 0
+let orderDeleteCalled = false
+
+// Per-test controls for the resilience paths.
+let orderInsertFailUntilAttempt = 0 // simulate N order_number collisions
+let itemInsertFails = false // simulate an order_items insert failure
 
 // The products query awaits `.in(...)` directly, so it returns a Promise.
 function makeAdminClient() {
@@ -41,17 +47,28 @@ function makeAdminClient() {
           insert: (row: Record<string, unknown>) => ({
             select: () => ({
               single: async () => {
+                orderInsertAttempts += 1
+                if (orderInsertAttempts <= orderInsertFailUntilAttempt) {
+                  // 23505 = unique_violation on order_number; action retries.
+                  return { data: null, error: { code: "23505" } }
+                }
                 insertedOrder = row
                 return { data: { id: "order-1" }, error: null }
               },
             }),
           }),
-          delete: () => ({ eq: async () => ({ error: null }) }),
+          delete: () => ({
+            eq: async () => {
+              orderDeleteCalled = true
+              return { error: null }
+            },
+          }),
         }
       }
       if (table === "order_items") {
         return {
           insert: async (rows: Record<string, unknown>[]) => {
+            if (itemInsertFails) return { error: { message: "boom" } }
             insertedItems = rows
             return { error: null }
           },
@@ -87,6 +104,10 @@ beforeEach(() => {
   ]
   insertedOrder = null
   insertedItems = null
+  orderInsertAttempts = 0
+  orderDeleteCalled = false
+  orderInsertFailUntilAttempt = 0
+  itemInsertFails = false
 })
 
 describe("createOrder", () => {
@@ -146,5 +167,25 @@ describe("createOrder", () => {
     ])
     expect(result.ok).toBe(false)
     if (!result.ok) expect(result.fieldErrors?.email).toBeTruthy()
+  })
+
+  it("retries the order number on a unique-violation collision", async () => {
+    // First two order inserts collide on order_number; the third succeeds.
+    orderInsertFailUntilAttempt = 2
+    const result = await createOrder(customer, [
+      { productId: "a", quantity: 1 },
+    ])
+    expect(result.ok).toBe(true)
+    expect(orderInsertAttempts).toBe(3)
+  })
+
+  it("rolls back the order when item insert fails", async () => {
+    itemInsertFails = true
+    const result = await createOrder(customer, [
+      { productId: "a", quantity: 1 },
+    ])
+    expect(result.ok).toBe(false)
+    // The orphaned order must be deleted so no partial order remains.
+    expect(orderDeleteCalled).toBe(true)
   })
 })
