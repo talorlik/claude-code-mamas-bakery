@@ -25,6 +25,12 @@ export async function requestPasswordReset(formData: FormData) {
     )
   }
 
+  // Carried by the hidden field the Turnstile widget populates; empty when
+  // captcha is not configured. Supabase rejects an absent token when captcha is
+  // enabled. Sending `undefined` (not "") avoids forcing captcha when disabled.
+  const captchaToken =
+    String(formData.get("captchaToken") ?? "").trim() || undefined
+
   const origin = await resolveOrigin()
   const supabase = await createClient()
 
@@ -32,6 +38,7 @@ export async function requestPasswordReset(formData: FormData) {
   // leak account existence.
   await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origin}/auth/confirm?next=/reset-password`,
+    captchaToken,
   })
 
   redirect(

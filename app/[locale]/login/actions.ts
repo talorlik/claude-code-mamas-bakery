@@ -15,6 +15,18 @@ const MIN_PASSWORD_LENGTH = 8
 type Credentials = { email: string; password: string }
 
 /**
+ * Reads the Cloudflare Turnstile token a form carries in its hidden
+ * `captchaToken` field, or `undefined` when empty. Returning `undefined` (not
+ * `""`) lets it be spread into Supabase's `options` without forcing a captcha
+ * when none is configured; when captcha is enabled in Supabase, an absent token
+ * is rejected server-side by Supabase itself.
+ */
+function readCaptchaToken(formData: FormData): string | undefined {
+  const token = String(formData.get("captchaToken") ?? "").trim()
+  return token || undefined
+}
+
+/**
  * Returns a safe in-app redirect target from a submitted form, or null.
  *
  * Only same-site, absolute-path values (starting with a single `/`) are
@@ -74,10 +86,12 @@ export async function login(formData: FormData) {
     })
   }
 
+  const captchaToken = readCaptchaToken(formData)
   const supabase = await createClient()
   const { data, error } = await supabase.auth.signInWithPassword({
     email: creds.email,
     password: creds.password,
+    options: { captchaToken },
   })
 
   if (error || !data.user) {
@@ -116,12 +130,14 @@ export async function signup(formData: FormData) {
       "http://localhost"
     )
 
+  const captchaToken = readCaptchaToken(formData)
   const supabase = await createClient()
   const { error } = await supabase.auth.signUp({
     email: creds.email,
     password: creds.password,
     options: {
       emailRedirectTo: `${origin}/auth/confirm`,
+      captchaToken,
     },
   })
 

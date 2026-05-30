@@ -49,7 +49,8 @@
     "resetLinkInvalid": "That reset link is invalid or has expired.",
     "newPassword": "New password",
     "newPasswordDescription": "Choose a new password for your account.",
-    "setNewPassword": "Set new password"
+    "setNewPassword": "Set new password",
+    "captchaError": "Captcha verification failed. Please try again."
   },
   "profile": {
     "title": "My Account",

@@ -4,6 +4,7 @@ import { useTranslations } from "next-intl"
 
 import { login, signup } from "./actions"
 import { Link } from "@/i18n/navigation"
+import { CaptchaField } from "@/components/shared/captcha-field"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -131,6 +132,8 @@ function CredentialsForm({
           {t("rememberMe")}
         </Label>
       ) : null}
+
+      <CaptchaField />
 
       {error ? (
         <p className="text-sm text-destructive" role="alert">

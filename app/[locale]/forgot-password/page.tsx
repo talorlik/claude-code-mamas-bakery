@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 
 import { Link } from "@/i18n/navigation"
 import { requestPasswordReset } from "./actions"
+import { CaptchaField } from "@/components/shared/captcha-field"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -55,6 +56,8 @@ export default async function ForgotPasswordPage({
                 placeholder="you@example.com"
               />
             </div>
+
+            <CaptchaField />
 
             {sp.error ? (
               <p className="text-sm text-destructive" role="alert">

@@ -49,7 +49,8 @@
     "resetLinkInvalid": "קישור האיפוס אינו תקין או שתוקפו פג.",
     "newPassword": "סיסמה חדשה",
     "newPasswordDescription": "בחרו סיסמה חדשה לחשבון שלכם.",
-    "setNewPassword": "הגדרת סיסמה חדשה"
+    "setNewPassword": "הגדרת סיסמה חדשה",
+    "captchaError": "אימות ה-Captcha נכשל. נסו שוב."
   },
   "profile": {
     "title": "החשבון שלי",
