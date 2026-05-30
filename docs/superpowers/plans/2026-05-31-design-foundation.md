@@ -341,7 +341,7 @@ In `__tests__/unit/product-card.test.tsx`, add two new `it` blocks inside the ex
 ```tsx
   it("renders the product name in the display serif", () => {
     renderCard()
-    const name = screen.getByText("Sourdough")
+    const name = screen.getByText("Classic Challah")
     expect(name.className).toContain("font-display")
   })
 
@@ -545,4 +545,4 @@ git commit -m "chore(design): apply Prettier formatting to foundation changes"
 
 **Placeholder scan:** No TBD/TODO; every code step shows full code; every command shows expected output.
 
-**Type/name consistency:** `--font-fraunces` variable name is consistent across layout (`variable: "--font-fraunces"`) and globals (`var(--font-fraunces)`). `.font-display` utility defined in Task 3 Step 4 and consumed in Tasks 4 and 5. `ProductCard` props (`product`, `locale`) unchanged, so the existing test's `renderCard` helper still compiles.
+**Type/name consistency:** `--font-fraunces` variable name is consistent across layout (`variable: "--font-fraunces"`) and globals (`var(--font-fraunces)`). `.font-display` utility defined in Task 3 Step 4 and consumed in Tasks 4 and 5. `ProductCard` props (`product`, `locale`) unchanged, so the existing test's `renderCard` helper still compiles. New test assertions reference the existing fixture's product name "Classic Challah" (category "Challah"), matching the `product` fixture already defined at the top of `product-card.test.tsx`.
