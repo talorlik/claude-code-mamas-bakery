@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useTranslations } from "next-intl"
 
 import {
   updateProfile,
@@ -67,6 +68,7 @@ function ContactDetailsForm({
   initialFullName: string
   initialPhone: string
 }) {
+  const t = useTranslations("profile")
   const [feedback, setFeedback] = React.useState<Feedback>(null)
   const [pending, setPending] = React.useState(false)
 
@@ -79,7 +81,7 @@ function ContactDetailsForm({
     setPending(false)
     setFeedback(
       result.ok
-        ? { ok: true, message: "Details saved." }
+        ? { ok: true, message: t("detailsSaved") }
         : { ok: false, message: result.error }
     )
   }
@@ -87,15 +89,13 @@ function ContactDetailsForm({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Contact details</CardTitle>
-        <CardDescription>
-          Used to prefill the order form at checkout.
-        </CardDescription>
+        <CardTitle>{t("contactDetails")}</CardTitle>
+        <CardDescription>{t("contactDescription")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form action={onSubmit} className="flex flex-col gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="fullName">Full name</Label>
+            <Label htmlFor="fullName">{t("fullName")}</Label>
             <Input
               id="fullName"
               name="fullName"
@@ -105,7 +105,7 @@ function ContactDetailsForm({
             />
           </div>
           <div className="grid gap-2">
-            <Label htmlFor="phone">Phone</Label>
+            <Label htmlFor="phone">{t("phone")}</Label>
             <Input
               id="phone"
               name="phone"
@@ -116,7 +116,7 @@ function ContactDetailsForm({
           </div>
           <FormFeedback feedback={feedback} />
           <Button type="submit" disabled={pending} className="w-fit">
-            {pending ? "Saving…" : "Save details"}
+            {pending ? t("saving") : t("saveDetails")}
           </Button>
         </form>
       </CardContent>
@@ -125,6 +125,7 @@ function ContactDetailsForm({
 }
 
 function EmailForm({ currentEmail }: { currentEmail: string }) {
+  const t = useTranslations("profile")
   const [feedback, setFeedback] = React.useState<Feedback>(null)
   const [pending, setPending] = React.useState(false)
 
@@ -134,10 +135,7 @@ function EmailForm({ currentEmail }: { currentEmail: string }) {
     setPending(false)
     setFeedback(
       result.ok
-        ? {
-            ok: true,
-            message: "Check your inbox to confirm the new email address.",
-          }
+        ? { ok: true, message: t("emailCheckInbox") }
         : { ok: false, message: result.error }
     )
   }
@@ -145,15 +143,13 @@ function EmailForm({ currentEmail }: { currentEmail: string }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Email</CardTitle>
-        <CardDescription>
-          Changing your email requires confirmation via a link.
-        </CardDescription>
+        <CardTitle>{t("emailSection")}</CardTitle>
+        <CardDescription>{t("emailDescription")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form action={onSubmit} className="flex flex-col gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="email">Email address</Label>
+            <Label htmlFor="email">{t("emailAddress")}</Label>
             <Input
               id="email"
               name="email"
@@ -164,7 +160,7 @@ function EmailForm({ currentEmail }: { currentEmail: string }) {
           </div>
           <FormFeedback feedback={feedback} />
           <Button type="submit" disabled={pending} className="w-fit">
-            {pending ? "Updating…" : "Update email"}
+            {pending ? t("updating") : t("updateEmail")}
           </Button>
         </form>
       </CardContent>
@@ -173,6 +169,8 @@ function EmailForm({ currentEmail }: { currentEmail: string }) {
 }
 
 function PasswordForm() {
+  const t = useTranslations("profile")
+  const tAuth = useTranslations("auth")
   const [feedback, setFeedback] = React.useState<Feedback>(null)
   const [pending, setPending] = React.useState(false)
 
@@ -182,7 +180,7 @@ function PasswordForm() {
     setPending(false)
     setFeedback(
       result.ok
-        ? { ok: true, message: "Password updated." }
+        ? { ok: true, message: t("passwordUpdated") }
         : { ok: false, message: result.error }
     )
   }
@@ -190,15 +188,13 @@ function PasswordForm() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Password</CardTitle>
-        <CardDescription>
-          Choose a new password for your account.
-        </CardDescription>
+        <CardTitle>{t("passwordSection")}</CardTitle>
+        <CardDescription>{t("passwordDescription")}</CardDescription>
       </CardHeader>
       <CardContent>
         <form action={onSubmit} className="flex flex-col gap-4">
           <div className="grid gap-2">
-            <Label htmlFor="password">New password</Label>
+            <Label htmlFor="password">{t("newPassword")}</Label>
             <Input
               id="password"
               name="password"
@@ -206,12 +202,12 @@ function PasswordForm() {
               autoComplete="new-password"
               required
               minLength={8}
-              placeholder="At least 8 characters"
+              placeholder={tAuth("passwordHint")}
             />
           </div>
           <FormFeedback feedback={feedback} />
           <Button type="submit" disabled={pending} className="w-fit">
-            {pending ? "Updating…" : "Update password"}
+            {pending ? t("updating") : t("updatePassword")}
           </Button>
         </form>
       </CardContent>

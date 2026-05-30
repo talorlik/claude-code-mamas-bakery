@@ -1,6 +1,6 @@
 "use client"
 
-import { useLocale } from "next-intl"
+import { useLocale, useTranslations } from "next-intl"
 import { Languages } from "lucide-react"
 
 import { usePathname, useRouter } from "@/i18n/navigation"
@@ -18,6 +18,7 @@ const LOCALE_LABELS: Record<AppLocale, string> = {
  * cookie, and the middleware flips `<html dir>` on the next render.
  */
 export function LanguageSwitcher() {
+  const t = useTranslations("nav")
   const locale = useLocale() as AppLocale
   const pathname = usePathname()
   const router = useRouter()
@@ -29,7 +30,7 @@ export function LanguageSwitcher() {
     <Button
       variant="ghost"
       size="sm"
-      aria-label="Language"
+      aria-label={t("language")}
       onClick={() => router.replace(pathname, { locale: next })}
       className="gap-1.5"
     >

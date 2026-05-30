@@ -26,6 +26,11 @@
     "browseMenu": "Browse the menu",
     "getStarted": "Get started"
   },
+  "errorPage": {
+    "title": "Something went wrong",
+    "body": "Your authentication link may be expired or already used. Try signing in again or request a new confirmation email.",
+    "backToSignIn": "Back to sign in"
+  },
   "auth": {
     "welcome": "Welcome to Mom's Bread",
     "subtitle": "Sign in to your account, or create a new one.",
@@ -46,10 +51,19 @@
     "phone": "Phone",
     "saveDetails": "Save details",
     "emailSection": "Email",
+    "emailAddress": "Email address",
     "updateEmail": "Update email",
     "passwordSection": "Password",
     "newPassword": "New password",
-    "updatePassword": "Update password"
+    "updatePassword": "Update password",
+    "contactDescription": "Used to prefill the order form at checkout.",
+    "emailDescription": "Changing your email requires confirmation via a link.",
+    "passwordDescription": "Choose a new password for your account.",
+    "saving": "Saving…",
+    "updating": "Updating…",
+    "detailsSaved": "Details saved.",
+    "emailCheckInbox": "Check your inbox to confirm the new email address.",
+    "passwordUpdated": "Password updated."
   },
   "admin": {
     "title": "Admin",

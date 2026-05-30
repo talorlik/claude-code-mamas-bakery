@@ -26,6 +26,11 @@
     "browseMenu": "לתפריט",
     "getStarted": "התחילו כאן"
   },
+  "errorPage": {
+    "title": "משהו השתבש",
+    "body": "ייתכן שקישור האימות פג תוקף או כבר היה בשימוש. נסו להתחבר שוב או בקשו אימייל אישור חדש.",
+    "backToSignIn": "חזרה להתחברות"
+  },
   "auth": {
     "welcome": "ברוכים הבאים להלחם של אמא",
     "subtitle": "התחברו לחשבון שלכם, או צרו חשבון חדש.",
@@ -46,10 +51,19 @@
     "phone": "טלפון",
     "saveDetails": "שמירת פרטים",
     "emailSection": "אימייל",
+    "emailAddress": "כתובת אימייל",
     "updateEmail": "עדכון אימייל",
     "passwordSection": "סיסמה",
     "newPassword": "סיסמה חדשה",
-    "updatePassword": "עדכון סיסמה"
+    "updatePassword": "עדכון סיסמה",
+    "contactDescription": "משמש למילוי מראש של טופס ההזמנה בקופה.",
+    "emailDescription": "שינוי האימייל מחייב אישור באמצעות קישור.",
+    "passwordDescription": "בחרו סיסמה חדשה לחשבון שלכם.",
+    "saving": "שומר…",
+    "updating": "מעדכן…",
+    "detailsSaved": "הפרטים נשמרו.",
+    "emailCheckInbox": "בדקו את תיבת הדואר כדי לאשר את כתובת האימייל החדשה.",
+    "passwordUpdated": "הסיסמה עודכנה."
   },
   "admin": {
     "title": "ניהול",
