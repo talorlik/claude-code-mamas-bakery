@@ -81,8 +81,8 @@ export default async function OrdersPage({
               </CardHeader>
               <CardContent className="flex flex-col gap-3 text-sm">
                 <p className="text-muted-foreground">
-                  {t("orderedOn")} {formatDate(order.created_at)} ·{" "}
-                  {t("pickupOn")} {formatDate(order.pickup_date)}
+                  {t("orderedOnDate", { date: formatDate(order.created_at) })}{" "}
+                  · {t("pickupOnDate", { date: formatDate(order.pickup_date) })}
                 </p>
                 <ul>
                   {order.items.map((item) => (

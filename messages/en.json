@@ -188,8 +188,8 @@
     "heading": "My Orders",
     "description": "Your order history.",
     "empty": "You have no orders yet.",
-    "orderedOn": "Ordered",
-    "pickupOn": "Pickup",
+    "orderedOnDate": "Ordered {date}",
+    "pickupOnDate": "Pickup {date}",
     "total": "Total",
     "status": "Status",
     "payment": "Payment"

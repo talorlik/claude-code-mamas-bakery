@@ -188,8 +188,8 @@
     "heading": "ההזמנות שלי",
     "description": "היסטוריית ההזמנות שלך.",
     "empty": "אין לך הזמנות עדיין.",
-    "orderedOn": "הוזמן",
-    "pickupOn": "איסוף",
+    "orderedOnDate": "הוזמן ב-{date}",
+    "pickupOnDate": "איסוף ב-{date}",
     "total": "סך הכול",
     "status": "סטטוס",
     "payment": "תשלום"
