@@ -31,6 +31,9 @@ export function CartView({
 }) {
   const t = useTranslations("cart")
   const { cart, hydrated, total, clear } = useCart()
+  // Mirrors the order form's selected delivery fee so the summary total matches
+  // what the server computes and charges.
+  const [deliveryFee, setDeliveryFee] = React.useState(0)
   const [pending, setPending] = React.useState(false)
   const [fieldErrors, setFieldErrors] = React.useState<Record<string, string>>()
   const [formError, setFormError] = React.useState<string>()
@@ -102,9 +105,25 @@ export function CartView({
             {cart.map((item) => (
               <CartItemRow key={item.productId} item={item} />
             ))}
+            {deliveryFee > 0 ? (
+              <>
+                <div className="flex items-center justify-between pt-4 text-sm text-muted-foreground">
+                  <span>{t("subtotal")}</span>
+                  <span className="tabular-nums">{formatPrice(total)}</span>
+                </div>
+                <div className="flex items-center justify-between text-sm text-muted-foreground">
+                  <span>{t("deliveryFeeLabel")}</span>
+                  <span className="tabular-nums">
+                    {formatPrice(deliveryFee)}
+                  </span>
+                </div>
+              </>
+            ) : null}
             <div className="flex items-center justify-between pt-4 text-lg font-semibold">
               <span>{t("total")}</span>
-              <span className="tabular-nums">{formatPrice(total)}</span>
+              <span className="tabular-nums">
+                {formatPrice(total + deliveryFee)}
+              </span>
             </div>
           </CardContent>
         </Card>
@@ -124,6 +143,7 @@ export function CartView({
                   fieldErrors={fieldErrors}
                   defaults={defaults}
                   emailReadOnly
+                  onDeliveryFeeChange={setDeliveryFee}
                 />
                 {formError ? (
                   <p className="text-sm text-destructive" role="alert">

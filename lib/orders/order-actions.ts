@@ -66,6 +66,11 @@ export async function createOrder(
   if (!user) {
     return fail("Please sign in to place your order.")
   }
+  // The account email is authoritative for the order and notifications; an
+  // account with no email cannot order until it adds one.
+  if (!user.email) {
+    return fail("Add an email to your account before ordering.")
+  }
 
   const validation = validateOrderCustomer(customer)
   if (!validation.ok) return validation
@@ -147,7 +152,7 @@ export async function createOrder(
         customer_name: validation.data.fullName,
         customer_phone: validation.data.phone,
         // Email is taken from the authenticated account, not the form.
-        customer_email: user.email ?? validation.data.email,
+        customer_email: user.email,
         pickup_date: validation.data.pickupDate,
         notes: validation.data.notes || null,
         total_amount: total,
@@ -225,10 +230,10 @@ export async function createOrder(
       .eq("user_id", user.id)
   }
 
-  // Send the order-confirmation email. Fire-and-forget and fully guarded: an
-  // email (or locale-resolution) failure must not fail an order already
-  // committed to the database.
-  const recipient = user.email ?? validation.data.email
+  // Send the order-confirmation email to the account address. Fire-and-forget
+  // and fully guarded: an email (or locale-resolution) failure must not fail an
+  // order already committed to the database.
+  const recipient = user.email
   if (recipient) {
     try {
       const locale = ((await getLocale()) as Locale) ?? "en"

@@ -160,6 +160,7 @@
     "postalCode": "Postal code",
     "carrier": "Delivery option",
     "deliveryFee": "Delivery fee: {fee}",
+    "deliveryFeeLabel": "Delivery fee",
     "signInToOrder": "Please sign in to place your order. Your cart will be waiting.",
     "signIn": "Sign in to order",
     "placeOrder": "Place order",

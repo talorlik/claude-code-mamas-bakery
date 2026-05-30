@@ -37,9 +37,13 @@ export function renderShell({
   heading: string
   body: string
 }): string {
-  const dir = locale === "he" ? "rtl" : "ltr"
+  // Normalize to a known locale before interpolating into the markup, so the
+  // lang attribute can never carry an unexpected value even if a bad locale is
+  // somehow passed.
+  const lang = locale === "he" ? "he" : "en"
+  const dir = lang === "he" ? "rtl" : "ltr"
   return `<!doctype html>
-<html lang="${locale}" dir="${dir}">
+<html lang="${lang}" dir="${dir}">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />

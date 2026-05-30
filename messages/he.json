@@ -160,6 +160,7 @@
     "postalCode": "מיקוד",
     "carrier": "אפשרות משלוח",
     "deliveryFee": "דמי משלוח: {fee}",
+    "deliveryFeeLabel": "דמי משלוח",
     "signInToOrder": "יש להתחבר כדי לבצע את ההזמנה. הסל יישמר עבורכם.",
     "signIn": "התחברות להזמנה",
     "placeOrder": "ביצוע הזמנה",

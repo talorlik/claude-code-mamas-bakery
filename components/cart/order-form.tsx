@@ -55,12 +55,18 @@ export function OrderForm({
   fieldErrors,
   defaults,
   emailReadOnly = false,
+  onDeliveryFeeChange,
 }: {
   onSubmit: (input: OrderCustomerInput) => void
   pending: boolean
   fieldErrors?: Record<string, string>
   defaults?: OrderFormDefaults
   emailReadOnly?: boolean
+  /**
+   * Reports the currently-selected delivery fee (0 for pickup) so the cart
+   * summary can show the same total the server will compute and charge.
+   */
+  onDeliveryFeeChange?: (fee: number) => void
 }) {
   const t = useTranslations("cart")
   // Default to the first selectable pickup date so the customer never lands on
@@ -74,6 +80,13 @@ export function OrderForm({
   )
 
   const selectedCarrier = DELIVERY_CARRIERS.find((c) => c.id === carrierId)
+
+  // Keep the parent's total in sync with the chosen fulfillment + carrier.
+  const deliveryFee =
+    method === "delivery" ? (selectedCarrier?.flatFee ?? 0) : 0
+  React.useEffect(() => {
+    onDeliveryFeeChange?.(deliveryFee)
+  }, [deliveryFee, onDeliveryFeeChange])
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()

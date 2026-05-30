@@ -95,11 +95,17 @@ function Carousel({
 
   React.useEffect(() => {
     if (!api) return
-    onSelect(api)
     api.on("reInit", onSelect)
     api.on("select", onSelect)
+    // Drive the initial canScroll* sync through embla's own event
+    // dispatcher rather than calling onSelect() directly in the effect
+    // body, which would synchronously setState during the effect
+    // (react-hooks/set-state-in-effect). "reInit" runs the same handler
+    // and reproduces mount behavior identically.
+    api.emit("reInit")
 
     return () => {
+      api?.off("reInit", onSelect)
       api?.off("select", onSelect)
     }
   }, [api, onSelect])

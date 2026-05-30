@@ -321,6 +321,15 @@ describe("createOrder", () => {
     expect(insertedOrder).toBeNull()
   })
 
+  it("rejects an order from an account with no email", async () => {
+    currentUser = { id: "user-1", email: "" }
+    const result = await createOrder(customer, [
+      { productId: "a", quantity: 1 },
+    ])
+    expect(result.ok).toBe(false)
+    expect(insertedOrder).toBeNull()
+  })
+
   it("links the order to the user and uses the account email", async () => {
     currentUser = { id: "user-9", email: "account@example.com" }
     const result = await createOrder(
