@@ -15,6 +15,9 @@ function validInput(
     email: "dana@example.com",
     pickupDate: "2999-12-31",
     notes: "",
+    fulfillmentMethod: "pickup",
+    carrierId: null,
+    address: null,
     ...overrides,
   }
 }
@@ -87,6 +90,55 @@ describe("validateOrderCustomer", () => {
     if (result.ok) {
       expect(result.data.fullName).toBe("Dana Levi")
       expect(result.data.phone).toBe("0501234567")
+      expect(result.data.fulfillmentMethod).toBe("pickup")
+      expect(result.data.carrierId).toBeNull()
+    }
+  })
+
+  it("requires a carrier and address for delivery", () => {
+    const result = validateOrderCustomer(
+      validInput({ fulfillmentMethod: "delivery" })
+    )
+    expect(result.ok).toBe(false)
+    if (!result.ok) {
+      expect(result.fieldErrors?.carrierId).toBeTruthy()
+      expect(result.fieldErrors?.addressLine1).toBeTruthy()
+    }
+  })
+
+  it("rejects an unknown carrier id for delivery", () => {
+    const result = validateOrderCustomer(
+      validInput({
+        fulfillmentMethod: "delivery",
+        carrierId: "nope-carrier",
+        address: {
+          addressLine1: "1 Main St",
+          city: "Tel Aviv",
+          postalCode: "61000",
+        },
+      })
+    )
+    expect(result.ok).toBe(false)
+    if (!result.ok) expect(result.fieldErrors?.carrierId).toBeTruthy()
+  })
+
+  it("accepts a valid delivery order and normalizes the address", () => {
+    const result = validateOrderCustomer(
+      validInput({
+        fulfillmentMethod: "delivery",
+        carrierId: "citywide-demo",
+        address: {
+          addressLine1: "  1 Main St  ",
+          city: "Tel Aviv",
+          postalCode: "61000",
+        },
+      })
+    )
+    expect(result.ok).toBe(true)
+    if (result.ok) {
+      expect(result.data.fulfillmentMethod).toBe("delivery")
+      expect(result.data.carrierId).toBe("citywide-demo")
+      expect(result.data.address?.addressLine1).toBe("1 Main St")
     }
   })
 })

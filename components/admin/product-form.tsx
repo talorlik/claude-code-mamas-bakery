@@ -88,6 +88,8 @@ export function ProductForm({
       category: String(data.get("category") ?? "other"),
       imageUrl: String(data.get("imageUrl") ?? ""),
       isAvailable,
+      stockQuantity: String(data.get("stockQuantity") ?? "0"),
+      lowStockThreshold: String(data.get("lowStockThreshold") ?? "0"),
     })
   }
 
@@ -147,6 +149,44 @@ export function ProductForm({
               </option>
             ))}
           </NativeSelect>
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-2">
+          <Label htmlFor="stockQuantity">{t("stockQuantity")}</Label>
+          <Input
+            id="stockQuantity"
+            name="stockQuantity"
+            type="number"
+            min="0"
+            step="1"
+            defaultValue={product?.stock_quantity ?? 0}
+            required
+          />
+          {fieldErrors?.stockQuantity ? (
+            <p className="text-sm text-destructive">
+              {fieldErrors.stockQuantity}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="grid gap-2">
+          <Label htmlFor="lowStockThreshold">{t("lowStockThreshold")}</Label>
+          <Input
+            id="lowStockThreshold"
+            name="lowStockThreshold"
+            type="number"
+            min="0"
+            step="1"
+            defaultValue={product?.low_stock_threshold ?? 0}
+            required
+          />
+          {fieldErrors?.lowStockThreshold ? (
+            <p className="text-sm text-destructive">
+              {fieldErrors.lowStockThreshold}
+            </p>
+          ) : null}
         </div>
       </div>
 

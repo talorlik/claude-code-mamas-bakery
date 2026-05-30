@@ -41,8 +41,23 @@ export interface OrderWithItems extends Order {
 }
 
 /**
+ * A delivery address as captured at checkout (and saved to the profile).
+ * line2 is optional; the rest are required when fulfillment is delivery.
+ */
+export interface DeliveryAddressInput {
+  addressLine1: string
+  addressLine2?: string
+  city: string
+  postalCode: string
+}
+
+/**
  * Customer-supplied fields for an order, before server-side validation.
  * Cart contents are validated and priced separately on the server.
+ *
+ * `fulfillmentMethod` selects pickup or delivery. For delivery, `carrierId`
+ * and `address` are required; the delivery fee is derived server-side from the
+ * carrier, never taken from the client.
  */
 export interface OrderCustomerInput {
   fullName: string
@@ -50,4 +65,7 @@ export interface OrderCustomerInput {
   email: string
   pickupDate: string
   notes?: string
+  fulfillmentMethod: "pickup" | "delivery"
+  carrierId?: string | null
+  address?: DeliveryAddressInput | null
 }

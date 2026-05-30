@@ -1,6 +1,48 @@
 import type { ActionResult } from "@/lib/types/action-result"
 import { fail, ok } from "@/lib/types/action-result"
-import type { OrderCustomerInput } from "@/lib/orders/order-types"
+import type {
+  DeliveryAddressInput,
+  OrderCustomerInput,
+} from "@/lib/orders/order-types"
+import { isPickupDateAllowed } from "@/lib/orders/pickup-rules"
+import { getCarrier } from "@/lib/delivery/carriers"
+
+/**
+ * Validates and normalizes a delivery address. line1, city, and postalCode are
+ * required; line2 is optional. Field errors are keyed to the address inputs so
+ * the form can highlight them. Returns the trimmed address on success.
+ */
+export function validateAddress(
+  input: DeliveryAddressInput
+): ActionResult<DeliveryAddressInput> {
+  const fieldErrors: Record<string, string> = {}
+
+  const addressLine1 = input.addressLine1?.trim() ?? ""
+  if (addressLine1.length < 3 || addressLine1.length > 200) {
+    fieldErrors.addressLine1 = "Enter a street address."
+  }
+
+  const addressLine2 = input.addressLine2?.trim() ?? ""
+  if (addressLine2.length > 200) {
+    fieldErrors.addressLine2 = "Address line 2 is too long."
+  }
+
+  const city = input.city?.trim() ?? ""
+  if (city.length < 2 || city.length > 120) {
+    fieldErrors.city = "Enter a city."
+  }
+
+  const postalCode = input.postalCode?.trim() ?? ""
+  if (postalCode.length < 2 || postalCode.length > 20) {
+    fieldErrors.postalCode = "Enter a postal code."
+  }
+
+  if (Object.keys(fieldErrors).length > 0) {
+    return fail("Please correct the highlighted fields.", fieldErrors)
+  }
+
+  return ok({ addressLine1, addressLine2, city, postalCode })
+}
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
@@ -62,14 +104,6 @@ export function validateLookup(raw: string): ActionResult<LookupQuery> {
 }
 
 /**
- * Returns today's date as a `YYYY-MM-DD` string in UTC, for comparing against
- * a date-only pickup value without timezone drift.
- */
-function todayUtc(): string {
-  return new Date().toISOString().slice(0, 10)
-}
-
-/**
  * Validates and normalizes customer-supplied order fields per the order
  * validation rules (name length, email, phone digit count, pickup date not in
  * the past, notes length). On success returns the normalized values; on
@@ -98,13 +132,38 @@ export function validateOrderCustomer(
   const pickupDate = input.pickupDate.trim()
   if (!pickupDate) {
     fieldErrors.pickupDate = "Choose a pickup date."
-  } else if (pickupDate < todayUtc()) {
-    fieldErrors.pickupDate = "Pickup date cannot be in the past."
+  } else if (!isPickupDateAllowed(pickupDate)) {
+    // Closed weekday (Fri/Sat), in the past, or inside the lead-time window.
+    fieldErrors.pickupDate = "That pickup date is not available."
   }
 
   const notes = input.notes?.trim() ?? ""
   if (notes.length > 1000) {
     fieldErrors.notes = "Notes must be 1000 characters or fewer."
+  }
+
+  // Fulfillment: pickup needs nothing extra; delivery requires a known carrier
+  // and a valid address. The fee itself is derived in createOrder, not here.
+  const fulfillmentMethod =
+    input.fulfillmentMethod === "delivery" ? "delivery" : "pickup"
+  let carrierId: string | null = null
+  let address: DeliveryAddressInput | null = null
+
+  if (fulfillmentMethod === "delivery") {
+    if (!getCarrier(input.carrierId)) {
+      fieldErrors.carrierId = "Choose a delivery option."
+    } else {
+      carrierId = input.carrierId as string
+    }
+
+    const addressResult = validateAddress(
+      input.address ?? { addressLine1: "", city: "", postalCode: "" }
+    )
+    if (!addressResult.ok) {
+      Object.assign(fieldErrors, addressResult.fieldErrors)
+    } else {
+      address = addressResult.data
+    }
   }
 
   if (Object.keys(fieldErrors).length > 0) {
@@ -117,5 +176,8 @@ export function validateOrderCustomer(
     email: input.email.trim().toLowerCase(),
     pickupDate,
     notes,
+    fulfillmentMethod,
+    carrierId,
+    address,
   })
 }

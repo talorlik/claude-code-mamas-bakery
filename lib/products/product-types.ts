@@ -32,4 +32,17 @@ export interface ProductInput {
   category: string
   imageUrl?: string | null
   isAvailable: boolean
+  stockQuantity: string | number
+  lowStockThreshold: string | number
+}
+
+/**
+ * Whether a product is at or below its low-stock threshold. A threshold of 0
+ * means "never flag", so a product is only low when the threshold is positive.
+ */
+export function isLowStock(product: Product): boolean {
+  return (
+    product.low_stock_threshold > 0 &&
+    product.stock_quantity <= product.low_stock_threshold
+  )
 }

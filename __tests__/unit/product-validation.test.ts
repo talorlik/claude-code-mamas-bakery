@@ -10,6 +10,8 @@ function validInput(overrides: Partial<ProductInput> = {}): ProductInput {
     category: "challah",
     imageUrl: "",
     isAvailable: true,
+    stockQuantity: "100",
+    lowStockThreshold: "0",
     ...overrides,
   }
 }

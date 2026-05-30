@@ -6,6 +6,7 @@ import { fail, ok } from "@/lib/types/action-result"
 import type { OrderCustomerInput } from "@/lib/orders/order-types"
 import { validateOrderCustomer } from "@/lib/orders/order-validation"
 import { generateOrderNumber } from "@/lib/orders/order-number"
+import { getCarrier } from "@/lib/delivery/carriers"
 
 /** A cart line as submitted by the client: only id and quantity are trusted. */
 export interface OrderLineInput {
@@ -60,7 +61,7 @@ export async function createOrder(
   // Re-fetch the products server-side; ignore client-sent prices entirely.
   const { data: products, error: productsError } = await admin
     .from("products")
-    .select("id, name, price, is_available")
+    .select("id, name, price, is_available, stock_quantity")
     .in("id", [...quantities.keys()])
 
   if (productsError || !products) {
@@ -83,6 +84,9 @@ export async function createOrder(
     if (!product || !product.is_available) {
       return fail("One or more items are no longer available.")
     }
+    if (product.stock_quantity < quantity) {
+      return fail(`Not enough stock for ${product.name}.`)
+    }
     const unitPrice = Number(product.price)
     const lineTotal = round2(unitPrice * quantity)
     total = round2(total + lineTotal)
@@ -94,6 +98,13 @@ export async function createOrder(
       line_total: lineTotal,
     })
   }
+
+  // Delivery fee is derived server-side from the chosen carrier; the client
+  // never sets it. Pickup orders carry a zero fee and no carrier.
+  const isDelivery = validation.data.fulfillmentMethod === "delivery"
+  const carrier = isDelivery ? getCarrier(validation.data.carrierId) : null
+  const deliveryFee = carrier ? carrier.flatFee : 0
+  total = round2(total + deliveryFee)
 
   // Link the order to the signed-in user, if any (guests allowed).
   const supabase = await createClient()
@@ -117,6 +128,13 @@ export async function createOrder(
         pickup_date: validation.data.pickupDate,
         notes: validation.data.notes || null,
         total_amount: total,
+        fulfillment_method: validation.data.fulfillmentMethod,
+        delivery_carrier: carrier?.id ?? null,
+        delivery_fee: deliveryFee,
+        delivery_address_line1: validation.data.address?.addressLine1 ?? null,
+        delivery_address_line2: validation.data.address?.addressLine2 || null,
+        delivery_city: validation.data.address?.city ?? null,
+        delivery_postal_code: validation.data.address?.postalCode ?? null,
       })
       .select("id")
       .single()
@@ -143,6 +161,45 @@ export async function createOrder(
     // Roll back the orphaned order so a failed item insert leaves no partial.
     await admin.from("orders").delete().eq("id", orderId)
     return fail("We couldn't place your order. Please try again.")
+  }
+
+  // Decrement stock atomically per line. decrement_stock guards on availability
+  // (UPDATE ... WHERE stock_quantity >= qty), so a concurrent order that drained
+  // the shelf between our read and here returns false rather than overselling.
+  // On any shortfall, restore the already-decremented lines and roll back the
+  // order so it never half-commits.
+  const decremented: typeof items = []
+  for (const item of items) {
+    const { data: succeeded, error: decError } = await admin.rpc(
+      "decrement_stock",
+      { p_product_id: item.product_id, p_quantity: item.quantity }
+    )
+    if (decError || !succeeded) {
+      for (const done of decremented) {
+        await admin.rpc("increment_stock", {
+          p_product_id: done.product_id,
+          p_quantity: done.quantity,
+        })
+      }
+      await admin.from("order_items").delete().eq("order_id", orderId)
+      await admin.from("orders").delete().eq("id", orderId)
+      return fail("One or more items just sold out. Please review your cart.")
+    }
+    decremented.push(item)
+  }
+
+  // Persist the delivery address onto the signed-in user's profile so it is
+  // prefilled next time. Best-effort: a failure here must not fail the order.
+  if (user && isDelivery && validation.data.address) {
+    await supabase
+      .from("profiles")
+      .update({
+        address_line1: validation.data.address.addressLine1,
+        address_line2: validation.data.address.addressLine2 || null,
+        city: validation.data.address.city,
+        postal_code: validation.data.address.postalCode,
+      })
+      .eq("user_id", user.id)
   }
 
   return ok({ orderNumber })

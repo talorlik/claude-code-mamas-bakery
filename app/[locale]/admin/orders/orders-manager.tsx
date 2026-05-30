@@ -12,6 +12,7 @@ import {
   setOrderPaid,
 } from "@/lib/orders/order-admin-actions"
 import { orderStatusLabel, type Locale } from "@/lib/orders/order-formatting"
+import { getCarrier } from "@/lib/delivery/carriers"
 import { formatDate, formatPrice } from "@/lib/utils/format"
 import {
   OrderStatusBadge,
@@ -53,11 +54,19 @@ export function OrdersManager({
   const t = useTranslations("adminOrders")
   const [orders, setOrders] = React.useState(initialOrders)
   const [status, setStatus] = React.useState<OrderStatus | "all">("all")
+  const [fulfillment, setFulfillment] = React.useState<
+    "pickup" | "delivery" | "all"
+  >("all")
   const [pickupDate, setPickupDate] = React.useState("")
   const [search, setSearch] = React.useState("")
   const [selectedId, setSelectedId] = React.useState<string | null>(null)
 
-  const filtered = filterOrders(orders, { status, pickupDate, search })
+  const filtered = filterOrders(orders, {
+    status,
+    pickupDate,
+    search,
+    fulfillment,
+  })
   const selected = orders.find((o) => o.id === selectedId) ?? null
 
   function patchOrder(updated: { id: string } & Partial<OrderWithItems>) {
@@ -88,6 +97,7 @@ export function OrdersManager({
 
   function clearFilters() {
     setStatus("all")
+    setFulfillment("all")
     setPickupDate("")
     setSearch("")
   }
@@ -116,6 +126,20 @@ export function OrdersManager({
                 {orderStatusLabel(s, locale)}
               </option>
             ))}
+          </NativeSelect>
+        </div>
+        <div className="grid gap-1.5">
+          <Label htmlFor="fulfillment">{t("filterFulfillment")}</Label>
+          <NativeSelect
+            id="fulfillment"
+            value={fulfillment}
+            onChange={(e) =>
+              setFulfillment(e.target.value as "pickup" | "delivery" | "all")
+            }
+          >
+            <option value="all">{t("allMethods")}</option>
+            <option value="pickup">{t("methodPickup")}</option>
+            <option value="delivery">{t("methodDelivery")}</option>
           </NativeSelect>
         </div>
         <div className="grid gap-1.5">
@@ -195,9 +219,33 @@ export function OrdersManager({
                   <p className="text-muted-foreground">
                     {selected.customer_phone} · {selected.customer_email}
                   </p>
-                  <p className="text-muted-foreground">
-                    {t("pickup")}: {formatDate(selected.pickup_date)}
-                  </p>
+                  {selected.fulfillment_method === "delivery" ? (
+                    <>
+                      <p className="text-muted-foreground">
+                        {t("methodDelivery")}
+                        {selected.delivery_carrier
+                          ? ` · ${getCarrier(selected.delivery_carrier)?.name ?? selected.delivery_carrier}`
+                          : ""}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {[
+                          selected.delivery_address_line1,
+                          selected.delivery_address_line2,
+                          selected.delivery_city,
+                          selected.delivery_postal_code,
+                        ]
+                          .filter(Boolean)
+                          .join(", ")}
+                      </p>
+                      <p className="text-muted-foreground">
+                        {t("deliveryDate")}: {formatDate(selected.pickup_date)}
+                      </p>
+                    </>
+                  ) : (
+                    <p className="text-muted-foreground">
+                      {t("methodPickup")}: {formatDate(selected.pickup_date)}
+                    </p>
+                  )}
                   {selected.notes ? (
                     <p className="mt-1">{selected.notes}</p>
                   ) : null}
@@ -216,6 +264,12 @@ export function OrdersManager({
                     </li>
                   ))}
                 </ul>
+                {selected.delivery_fee > 0 ? (
+                  <div className="flex justify-between text-sm text-muted-foreground">
+                    <span>{t("deliveryFeeLabel")}</span>
+                    <span>{formatPrice(selected.delivery_fee)}</span>
+                  </div>
+                ) : null}
                 <div className="flex justify-between font-medium">
                   <span>{t("total")}</span>
                   <span>{formatPrice(selected.total_amount)}</span>

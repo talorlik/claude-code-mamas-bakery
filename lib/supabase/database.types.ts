@@ -72,6 +72,13 @@ export type Database = {
           customer_email: string
           customer_name: string
           customer_phone: string
+          delivery_address_line1: string | null
+          delivery_address_line2: string | null
+          delivery_carrier: string | null
+          delivery_city: string | null
+          delivery_fee: number
+          delivery_postal_code: string | null
+          fulfillment_method: Database["public"]["Enums"]["fulfillment_method"]
           id: string
           is_paid: boolean
           notes: string | null
@@ -87,6 +94,13 @@ export type Database = {
           customer_email: string
           customer_name: string
           customer_phone: string
+          delivery_address_line1?: string | null
+          delivery_address_line2?: string | null
+          delivery_carrier?: string | null
+          delivery_city?: string | null
+          delivery_fee?: number
+          delivery_postal_code?: string | null
+          fulfillment_method?: Database["public"]["Enums"]["fulfillment_method"]
           id?: string
           is_paid?: boolean
           notes?: string | null
@@ -102,6 +116,13 @@ export type Database = {
           customer_email?: string
           customer_name?: string
           customer_phone?: string
+          delivery_address_line1?: string | null
+          delivery_address_line2?: string | null
+          delivery_carrier?: string | null
+          delivery_city?: string | null
+          delivery_fee?: number
+          delivery_postal_code?: string | null
+          fulfillment_method?: Database["public"]["Enums"]["fulfillment_method"]
           id?: string
           is_paid?: boolean
           notes?: string | null
@@ -122,8 +143,10 @@ export type Database = {
           id: string
           image_url: string | null
           is_available: boolean
+          low_stock_threshold: number
           name: string
           price: number
+          stock_quantity: number
           updated_at: string
         }
         Insert: {
@@ -133,8 +156,10 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_available?: boolean
+          low_stock_threshold?: number
           name: string
           price: number
+          stock_quantity?: number
           updated_at?: string
         }
         Update: {
@@ -144,31 +169,45 @@ export type Database = {
           id?: string
           image_url?: string | null
           is_available?: boolean
+          low_stock_threshold?: number
           name?: string
           price?: number
+          stock_quantity?: number
           updated_at?: string
         }
         Relationships: []
       }
       profiles: {
         Row: {
+          address_line1: string | null
+          address_line2: string | null
+          city: string | null
           created_at: string
           full_name: string | null
           phone: string | null
+          postal_code: string | null
           updated_at: string
           user_id: string
         }
         Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
           created_at?: string
           full_name?: string | null
           phone?: string | null
+          postal_code?: string | null
           updated_at?: string
           user_id: string
         }
         Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
           created_at?: string
           full_name?: string | null
           phone?: string | null
+          postal_code?: string | null
           updated_at?: string
           user_id?: string
         }
@@ -197,10 +236,19 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      decrement_stock: {
+        Args: { p_product_id: string; p_quantity: number }
+        Returns: boolean
+      }
+      increment_stock: {
+        Args: { p_product_id: string; p_quantity: number }
+        Returns: undefined
+      }
       is_admin: { Args: { user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role: "admin"
+      fulfillment_method: "pickup" | "delivery"
       order_status: "New" | "Received" | "Ready for Pickup" | "Completed"
       product_category: "challah" | "cake" | "sweets" | "other"
     }
@@ -331,6 +379,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin"],
+      fulfillment_method: ["pickup", "delivery"],
       order_status: ["New", "Received", "Ready for Pickup", "Completed"],
       product_category: ["challah", "cake", "sweets", "other"],
     },

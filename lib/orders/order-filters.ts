@@ -1,4 +1,5 @@
 import type { OrderStatus, OrderWithItems } from "@/lib/orders/order-types"
+import type { FulfillmentMethod } from "@/lib/delivery/carriers"
 import { normalizePhone } from "@/lib/orders/order-validation"
 
 /**
@@ -8,6 +9,7 @@ export interface OrderFilters {
   status?: OrderStatus | "all"
   pickupDate?: string
   search?: string
+  fulfillment?: FulfillmentMethod | "all"
 }
 
 /**
@@ -27,9 +29,14 @@ export function filterOrders(
   const pickupDate = filters.pickupDate?.trim() || null
   const search = filters.search?.trim().toLowerCase() || null
   const searchDigits = search ? normalizePhone(search).replace(/\D/g, "") : ""
+  const fulfillment =
+    filters.fulfillment && filters.fulfillment !== "all"
+      ? filters.fulfillment
+      : null
 
   return orders.filter((order) => {
     if (status && order.status !== status) return false
+    if (fulfillment && order.fulfillment_method !== fulfillment) return false
     if (pickupDate && order.pickup_date !== pickupDate) return false
     if (search) {
       const name = order.customer_name.toLowerCase()

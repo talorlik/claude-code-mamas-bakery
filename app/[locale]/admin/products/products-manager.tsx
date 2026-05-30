@@ -6,6 +6,7 @@ import { useTranslations } from "next-intl"
 import { toast } from "sonner"
 
 import type { Product, ProductInput } from "@/lib/products/product-types"
+import { isLowStock } from "@/lib/products/product-types"
 import {
   createProduct,
   updateProduct,
@@ -131,6 +132,7 @@ export function ProductsManager({
               <TableHead>{t("name")}</TableHead>
               <TableHead>{t("category")}</TableHead>
               <TableHead>{t("price")}</TableHead>
+              <TableHead>{t("stock")}</TableHead>
               <TableHead>{t("available")}</TableHead>
               <TableHead />
             </TableRow>
@@ -145,6 +147,14 @@ export function ProductsManager({
                   </Badge>
                 </TableCell>
                 <TableCell>{formatPrice(product.price)}</TableCell>
+                <TableCell>
+                  <span className="tabular-nums">{product.stock_quantity}</span>
+                  {isLowStock(product) ? (
+                    <Badge variant="destructive" className="ms-2">
+                      {t("lowStock")}
+                    </Badge>
+                  ) : null}
+                </TableCell>
                 <TableCell>
                   <Switch
                     checked={product.is_available}

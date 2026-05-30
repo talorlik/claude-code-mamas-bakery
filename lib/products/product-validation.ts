@@ -16,6 +16,18 @@ export interface ValidatedProduct {
   category: ProductCategory
   image_url: string | null
   is_available: boolean
+  stock_quantity: number
+  low_stock_threshold: number
+}
+
+/**
+ * Parses a form value to a non-negative integer, returning null when it is not
+ * a finite whole number of zero or more.
+ */
+function parseNonNegativeInt(value: string | number): number | null {
+  const n = typeof value === "number" ? value : Number(value)
+  if (!Number.isInteger(n) || n < 0) return null
+  return n
 }
 
 /**
@@ -67,6 +79,17 @@ export function validateProduct(
     fieldErrors.imageUrl = "Enter a valid image URL or leave it blank."
   }
 
+  const stockQuantity = parseNonNegativeInt(input.stockQuantity)
+  if (stockQuantity === null) {
+    fieldErrors.stockQuantity = "Stock must be a whole number of zero or more."
+  }
+
+  const lowStockThreshold = parseNonNegativeInt(input.lowStockThreshold)
+  if (lowStockThreshold === null) {
+    fieldErrors.lowStockThreshold =
+      "Low-stock threshold must be a whole number of zero or more."
+  }
+
   if (Object.keys(fieldErrors).length > 0) {
     return fail("Please correct the highlighted fields.", fieldErrors)
   }
@@ -78,5 +101,7 @@ export function validateProduct(
     category,
     image_url: rawImageUrl || null,
     is_available: input.isAvailable,
+    stock_quantity: stockQuantity as number,
+    low_stock_threshold: lowStockThreshold as number,
   })
 }

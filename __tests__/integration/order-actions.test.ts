@@ -15,6 +15,7 @@ type Product = {
   name: string
   price: number
   is_available: boolean
+  stock_quantity: number
 }
 
 let products: Product[] = []
@@ -22,10 +23,13 @@ let insertedOrder: Record<string, unknown> | null = null
 let insertedItems: Record<string, unknown>[] | null = null
 let orderInsertAttempts = 0
 let orderDeleteCalled = false
+let decrementCalls: { product_id: string; quantity: number }[] = []
+let incrementCalls: { product_id: string; quantity: number }[] = []
 
 // Per-test controls for the resilience paths.
 let orderInsertFailUntilAttempt = 0 // simulate N order_number collisions
 let itemInsertFails = false // simulate an order_items insert failure
+let soldOutProductId: string | null = null // simulate a concurrent stock-out
 
 // The products query awaits `.in(...)` directly, so it returns a Promise.
 function makeAdminClient() {
@@ -72,9 +76,33 @@ function makeAdminClient() {
             insertedItems = rows
             return { error: null }
           },
+          delete: () => ({ eq: async () => ({ error: null }) }),
         }
       }
       throw new Error(`unexpected table ${table}`)
+    },
+    // Stock RPCs: decrement_stock returns false when the product is flagged
+    // sold out for the test, mirroring the guarded UPDATE returning no rows.
+    rpc(
+      fn: string,
+      args: { p_product_id: string; p_quantity: number }
+    ): Promise<{ data: boolean | null; error: null }> {
+      if (fn === "decrement_stock") {
+        decrementCalls.push({
+          product_id: args.p_product_id,
+          quantity: args.p_quantity,
+        })
+        const ok = args.p_product_id !== soldOutProductId
+        return Promise.resolve({ data: ok, error: null })
+      }
+      if (fn === "increment_stock") {
+        incrementCalls.push({
+          product_id: args.p_product_id,
+          quantity: args.p_quantity,
+        })
+        return Promise.resolve({ data: null, error: null })
+      }
+      throw new Error(`unexpected rpc ${fn}`)
     },
   }
 }
@@ -94,20 +122,27 @@ const customer = {
   email: "dana@example.com",
   pickupDate: "2999-12-31",
   notes: "",
+  fulfillmentMethod: "pickup" as const,
+  carrierId: null,
+  address: null,
 }
 
 beforeEach(() => {
   products = [
-    { id: "a", name: "Challah", price: 18, is_available: true },
-    { id: "b", name: "Babka", price: 45, is_available: true },
-    { id: "c", name: "Tart", price: 55, is_available: false },
+    { id: "a", name: "Challah", price: 18, is_available: true, stock_quantity: 100 },
+    { id: "b", name: "Babka", price: 45, is_available: true, stock_quantity: 100 },
+    { id: "c", name: "Tart", price: 55, is_available: false, stock_quantity: 100 },
+    { id: "d", name: "Roll", price: 5, is_available: true, stock_quantity: 1 },
   ]
   insertedOrder = null
   insertedItems = null
   orderInsertAttempts = 0
   orderDeleteCalled = false
+  decrementCalls = []
+  incrementCalls = []
   orderInsertFailUntilAttempt = 0
   itemInsertFails = false
+  soldOutProductId = null
 })
 
 describe("createOrder", () => {
@@ -187,5 +222,62 @@ describe("createOrder", () => {
     expect(result.ok).toBe(false)
     // The orphaned order must be deleted so no partial order remains.
     expect(orderDeleteCalled).toBe(true)
+  })
+
+  it("rejects a line whose quantity exceeds available stock", async () => {
+    // Product d has stock 1; ordering 2 is rejected before any insert.
+    const result = await createOrder(customer, [
+      { productId: "d", quantity: 2 },
+    ])
+    expect(result.ok).toBe(false)
+    expect(insertedOrder).toBeNull()
+    expect(decrementCalls).toHaveLength(0)
+  })
+
+  it("decrements stock for each line on success", async () => {
+    const result = await createOrder(customer, [
+      { productId: "a", quantity: 2 },
+      { productId: "b", quantity: 1 },
+    ])
+    expect(result.ok).toBe(true)
+    expect(decrementCalls).toEqual([
+      { product_id: "a", quantity: 2 },
+      { product_id: "b", quantity: 1 },
+    ])
+  })
+
+  it("adds the carrier flat fee to the total for a delivery order", async () => {
+    // citywide-demo flat fee is 15; product a is 18 => total 33.
+    const result = await createOrder(
+      {
+        ...customer,
+        fulfillmentMethod: "delivery",
+        carrierId: "citywide-demo",
+        address: {
+          addressLine1: "1 Main St",
+          city: "Tel Aviv",
+          postalCode: "61000",
+        },
+      },
+      [{ productId: "a", quantity: 1 }]
+    )
+    expect(result.ok).toBe(true)
+    expect(insertedOrder?.fulfillment_method).toBe("delivery")
+    expect(insertedOrder?.delivery_fee).toBe(15)
+    expect(insertedOrder?.total_amount).toBe(33)
+    expect(insertedOrder?.delivery_carrier).toBe("citywide-demo")
+  })
+
+  it("rolls back and restores stock when a later line sold out concurrently", async () => {
+    // Decrement of "a" succeeds; "b" returns false (sold out between read and
+    // write). The order is deleted and the already-decremented "a" is restored.
+    soldOutProductId = "b"
+    const result = await createOrder(customer, [
+      { productId: "a", quantity: 2 },
+      { productId: "b", quantity: 1 },
+    ])
+    expect(result.ok).toBe(false)
+    expect(orderDeleteCalled).toBe(true)
+    expect(incrementCalls).toEqual([{ product_id: "a", quantity: 2 }])
   })
 })

@@ -24,6 +24,8 @@ const product: Product = {
   category: "challah",
   image_url: null,
   is_available: true,
+  stock_quantity: 100,
+  low_stock_threshold: 0,
   created_at: "2026-01-01T00:00:00Z",
   updated_at: "2026-01-01T00:00:00Z",
 }

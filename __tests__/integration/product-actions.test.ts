@@ -65,6 +65,8 @@ const validInput = {
   category: "other",
   imageUrl: "",
   isAvailable: true,
+  stockQuantity: "50",
+  lowStockThreshold: "5",
 }
 
 beforeEach(() => {
