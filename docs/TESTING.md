@@ -60,3 +60,14 @@ Playwright config is in `playwright.config.ts`. The E2E suite expects:
 npx playwright install   # one-time: download browsers
 npm run test:e2e
 ```
+
+The admin order-management test skips automatically unless
+`E2E_ADMIN_EMAIL`/`E2E_ADMIN_PASSWORD` are set; the customer flow and the
+non-admin access-control test always run.
+
+> [!NOTE]
+> The customer flow creates a real order per run, using a unique
+> `e2e+<timestamp>@example.com` address so it can find its own order. Against a
+> shared database these accumulate; clean them up with
+> `delete from public.orders where customer_email like 'e2e+%@example.com';`
+> or point the suite at a dedicated test project.

@@ -60,15 +60,19 @@ export async function updateSession(
     data: { user },
   } = await supabase.auth.getUser()
 
+  // Only a few routes require a session. Everything else - the menu, cart,
+  // order lookup, login, auth handlers - is public, so guests can browse and
+  // order. Expressed as a protected allowlist so new public pages are not
+  // accidentally gated.
   const pathname = stripLocale(request.nextUrl.pathname)
-  const isPublic =
-    pathname === "/" ||
-    pathname.startsWith("/login") ||
-    pathname.startsWith("/auth") ||
-    pathname.startsWith("/error") ||
-    pathname.startsWith("/api")
+  const isProtected =
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/") ||
+    pathname === "/profile" ||
+    pathname.startsWith("/profile/") ||
+    pathname === "/chat"
 
-  if (!user && !isPublic) {
+  if (!user && isProtected) {
     const loginUrl = request.nextUrl.clone()
     // Preserve the active locale prefix when redirecting to login.
     const segments = request.nextUrl.pathname.split("/")
