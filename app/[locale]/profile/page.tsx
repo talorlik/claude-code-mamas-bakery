@@ -39,6 +39,7 @@ export default async function ProfilePage({
   const { locale } = await params
   setRequestLocale(locale)
   const t = await getTranslations("profile")
+  const tOrders = await getTranslations("orders")
 
   const supabase = await createClient()
   const {
@@ -89,8 +90,13 @@ export default async function ProfilePage({
                   {order.order_number}
                 </CardTitle>
                 <CardDescription>
-                  {formatDate(order.created_at)} ·{" "}
-                  {formatDate(order.pickup_date)}
+                  {tOrders("orderedOnDate", {
+                    date: formatDate(order.created_at),
+                  })}{" "}
+                  ·{" "}
+                  {tOrders("pickupOnDate", {
+                    date: formatDate(order.pickup_date),
+                  })}
                 </CardDescription>
               </CardHeader>
               <CardContent className="flex flex-col gap-3">
