@@ -1,274 +1,240 @@
-<div dir="rtl">
+# Mom's Bread - Boutique Bakery Orders
 
-# 🎮 AI Game Changer — Vibe Coding Template
+Mom's Bread is a localized bakery ordering app built for a home-based
+boutique bakery. Customers can browse available baked goods, manage a cart,
+place pickup or delivery orders, and track order status. The bakery admin can
+manage products, orders, customers, stock, payments, and analytics from a
+protected dashboard.
 
-> 🔒 **תבנית זו מופצת באופן פרטי דרך פלטפורמת AI Game Changer.**
-> כדי להתקין, היכנס ל-[game-changer.brainai.co.il/template](https://game-changer.brainai.co.il/template) וקבל פקודת התקנה אישית.
-> אין צורך — וגם אי אפשר — לעשות `git clone` ישירות מ-GitHub.
+This project started from the private AI Game Changer App Template. The
+original Hebrew template README has been translated to English and updated to
+describe the current `mamas-bakery` application. For the source template
+reference, see the
+[AI Game Changer App Template PDF](docs/app-template/AI%20GAME%20CHANGER%20-%20App%20Template.pdf).
 
-טמפלייט production-ready לבניית אפליקציות AI-first עם **Next.js 16 + shadcn/ui + Supabase + Vercel AI Gateway**.
-נבנה במיוחד לתלמידי הקורס **Game Changer** — עם Claude Code מחובר, skills, MCPs, והכל מוכן ל-Vibe Coding.
+## Current Status
 
----
+The app has moved beyond the base template and now includes:
 
-## ✨ איך מתחילים? שני שלבים. תמיד.
+- Public landing, menu, cart, order lookup, auth, and profile pages.
+- English and Hebrew localization through `next-intl`.
+- RTL layout support for Hebrew and LTR layout support for English.
+- Supabase-backed products, profiles, orders, order items, and roles.
+- Authenticated checkout with server-side price, stock, and delivery validation.
+- Pickup and demo delivery flows with flat-fee carrier options.
+- Customer account profiles with saved contact and delivery details.
+- Admin-only product, order, customer, and analytics pages.
+- Product stock tracking, low-stock indicators, and image upload support.
+- Order status and payment controls for admins.
+- Optional order confirmation email through a Supabase Edge Function.
+- Optional Upstash Redis rate limiting for auth, password reset, and orders.
+- Authenticated AI chat route through Vercel AI Gateway.
+- Unit, integration, and Playwright E2E test coverage.
 
-> 🎯 **הדרך הנכונה להתחיל פרויקט חדש היא תמיד שני השלבים האלה — יחד, בסדר הזה, בלי דילוגים.**
-> כל מה שמעבר (AI, GitHub, Vercel) זה **תוספות** שמוסיפים אחר כך לפי הצורך.
+## Tech Stack
 
----
+- Next.js 16.1.7 with the App Router and Turbopack.
+- React 19.2.4.
+- TypeScript 5.9 with strict mode.
+- Tailwind CSS 4.
+- shadcn/ui, Base UI, and lucide-react.
+- Supabase Auth, SSR helpers, Postgres, RLS, Storage, and Edge Functions.
+- Vercel AI SDK with Vercel AI Gateway.
+- Vitest, React Testing Library, jsdom, and Playwright.
+- ESLint 9 and Prettier with `prettier-plugin-tailwindcss`.
 
-### 🟢 שלב 1 — העתקת הטמפלייט והתקנה (בטרמינל)
+## Local Setup
 
-> 💬 הסקריפט **ישאל אתכם** על שם הפרויקט ועל מיקום התיקייה — אין צורך לערוך שום דבר לפני ריצה.
+Use Node 20 or newer. Node 24 LTS is recommended.
 
+1. Install dependencies:
 
-**🪟 Windows — PowerShell** (פתחו **Windows PowerShell** או **Terminal** כמנהל):
+   ```bash
+   npm install
+   ```
 
-```powershell
-$f="$env:TEMP\gc-install.ps1"; irm "https://raw.githubusercontent.com/RanNahmany/game-changer-app-template/main/scripts/install-windows.ps1" -OutFile $f; & $f; Remove-Item $f -ErrorAction SilentlyContinue
-```
+1. Create local environment variables:
 
----
+   ```bash
+   cp .env.example .env.local
+   ```
 
-**🍎 Mac / Linux** — הדביקו בטרמינל:
+1. Fill in the values in `.env.local`.
 
-```bash
-bash <(curl -fsSL https://raw.githubusercontent.com/RanNahmany/game-changer-app-template/main/scripts/install-mac.sh)
-```
+1. Run the development server:
 
-הסקריפט ישאל אתכם לשם הפרויקט, ייצור תיקיית `projects` על ה-Desktop ויתקין הכל שם אוטומטית.
+   ```bash
+   npm run dev
+   ```
 
-הסקריפט ישאל אתכם:
-1. **שם הפרויקט** — אותיות קטנות באנגלית, מקפים, בלי רווחים
-2. **מיקום התיקייה** — בחרו מתוך שלוש אפשרויות:
-   - `Desktop\projects` (ברירת מחדל)
-   - `C:\projects`
-   - נתיב מותאם אישית
+1. Open the app:
 
-<details>
-<summary><b>מה הסקריפט עושה בשבילך?</b></summary>
+   ```text
+   http://localhost:3000
+   ```
 
-- 📂 יוצר את תיקיית היעד לפי הבחירה שלכם
-- 📥 משכפל את הטמפלייט לתיקייה עם השם שבחרתם
-- 🧹 מנקה את היסטוריית ה-git של הטמפלייט
-- 🆕 מאתחל git repo חדש על שמך
-- 📦 מתקין dependencies
-- 🔐 יוצר `.env.local` מתוך `.env.example`
-- ▲ מתקין את **Vercel plugin** ל-Claude Code
-- ✅ יוצר commit ראשון
+Locale-aware routes use an explicit prefix after detection, for example
+`/en/menu` and `/he/menu`.
 
-</details>
+## Environment Variables
 
----
-
-### 🟣 שלב 2 — הגדרת הפרויקט ב-Claude Code (חובה!)
-
-אחרי שהסקריפט הסתיים, פתחו Claude Code בתוך התיקייה והריצו:
-
-```bash
-/start-from-template
-```
-
-> ⚠️ **אל תדלגו על השלב הזה.** בלעדיו אין Supabase, אין DB, אין auth — הפרויקט פשוט לא עובד.
-
-הפקודה תעביר אתכם תהליך אינטראקטיבי (בעברית) שמחבר:
-1. **Supabase** — עם ה-API keys החדשים (`publishable` + `secret`), לא ה-legacy
-2. **Supabase MCP** — נותן ל-Claude Code גישה ישירה ל-DB שלך
-3. **דף בית ראשוני** — משהו יפה להתחיל איתו
-
-🎉 **זהו. אתם מוכנים לקוד.** כל מה שמופיע למטה זה תוספות אופציונליות.
-
----
-
-## ➕ תוספות אופציונליות
-
-אחרי שני השלבים הראשונים — תוכלו להוסיף מה שצריך, מתי שצריך.
-
-### 🤖 הוספת AI לפרויקט
-
-```bash
-/setup-vercel-ai
-```
-
-מחבר **Vercel AI Gateway** — גישה מאוחדת ל-Claude, GPT, Gemini וכל המודלים, עם **5$ קרדיט חינם כל חודש**.
-כולל התקנת `ai` + `@ai-sdk/gateway`, יצירת route צ'אט, ואופציונלית UI צ'אט עם shadcn.
-
----
-
-### 🚢 דיפלוי לפרודקשן (GitHub → Vercel עם CI/CD)
-
-מסלול deploy מובנה: **כל `git push` ל-`main` = production deploy אוטומטי**.
-
-#### שלב א׳ — GitHub
-
-```bash
-/setup-github
-```
-
-- יוצר repository ב-GitHub (public / private)
-- דוחף את הקוד ומחבר `origin`
-- דורש `gh` CLI (`brew install gh` ו-`gh auth login`)
-
-#### שלב ב׳ — Vercel
-
-```bash
-/setup-vercel
-```
-
-- מחבר את הפרויקט ל-Vercel + GitHub
-- מסנכרן environment variables (כולל ה-Supabase keys)
-- מעדכן Redirect URLs ב-Supabase לפרודקשן
-- מפעיל את הדיפלוי הראשון **דרך `git push`**
-
-> ⚠️ `/setup-github` חייב לרוץ **לפני** `/setup-vercel` — בלי GitHub repo אין CI/CD.
-
-מעכשיו:
-- **`git push origin main`** → production deploy
-- **`git push origin <branch>`** → preview deploy אוטומטי לכל branch/PR
-
----
-
-## 📦 מה יש בטמפלייט?
-
-### Stack
-- ⚡ **Next.js 16** (App Router + Turbopack)
-- 🎨 **Tailwind CSS 4** + **shadcn/ui** + **Base UI**
-- 🌙 **next-themes** — dark mode מוכן
-- 📊 **Recharts** — גרפים
-- 🔔 **Sonner** — toasts
-- 📅 **date-fns** + **react-day-picker**
-- 🎠 **Embla Carousel**, **Vaul** (drawers), **CMDK** (command palette)
-
-### Claude Code Integration
-- 📚 **Skills** מותקנים: `shadcn`, ועוד (ראה `.agents/skills/`)
-- 🔌 **MCP-ready** — מוכן ל-Supabase MCP ו-Context7
-- ⚙️ **Slash commands** — `/start-from-template` לאתחול, `/setup-vercel-ai` לחיבור AI
-
-### איכות קוד
-- 🔍 **TypeScript** strict mode
-- 🧹 **ESLint** + **Prettier** + **prettier-plugin-tailwindcss**
-- ✨ `npm run format` ו-`npm run typecheck` מוכנים
-
----
-
-## 🛠️ Scripts זמינים
-
-| Script | מה זה עושה |
-|--------|------------|
-| `npm run setup` | אתחול ראשוני של הפרויקט (רצים פעם אחת) |
-| `npm run dev` | שרת פיתוח עם Turbopack |
-| `npm run build` | build לפרודקשן |
-| `npm run start` | הרצת הפרודקשן build מקומית |
-| `npm run lint` | בדיקת ESLint |
-| `npm run format` | עיצוב קוד עם Prettier |
-| `npm run typecheck` | בדיקת TypeScript בלי build |
-
----
-
-## 🔐 Environment Variables
-
-הקובץ `.env.local` נוצר אוטומטית בהרצת `npm run setup`, והערכים נמלאים ב-`/start-from-template`. המשתנים:
+The app reads these variables from `.env.local`:
 
 ```env
-# Supabase — מפתחות חדשים (2026), לא ה-legacy anon/service_role!
-# Dashboard → Project Settings → API Keys → "Publishable and secret API keys"
-NEXT_PUBLIC_SUPABASE_URL=                  # https://<project-ref>.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=      # sb_publishable_...  (בטוח לדפדפן)
-SUPABASE_SECRET_KEY=                       # sb_secret_...       (שרת בלבד!)
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+SUPABASE_SECRET_KEY=
 
-# Vercel AI Gateway — 5$ חינם כל חודש
 AI_GATEWAY_API_KEY=
 
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+
+EMAIL_ENABLED=
+
+UPSTASH_REDIS_REST_URL=
+UPSTASH_REDIS_REST_TOKEN=
 ```
 
-**⚠️ אל תעלה את `.env.local` ל-git!** (זה כבר ב-`.gitignore`)
+Notes:
 
-### 🤖 MCP (Model Context Protocol)
+- `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` is browser-safe.
+- `SUPABASE_SECRET_KEY` is server-only. Never expose it to client code.
+- `AI_GATEWAY_API_KEY` is server-only and powers `/api/chat`.
+- Set `EMAIL_ENABLED=true` only when the `send-order-email` Edge Function
+  and SMTP secrets are configured.
+- Upstash variables are optional. When unset, rate limiting no-ops in local
+  development.
 
-`/start-from-template` יצור עבורך גם `.mcp.json` שמחבר את **Supabase MCP** — שנותן ל-Claude Code גישה ישירה לטבלאות, migrations ו-schema. הקובץ ב-`.gitignore` כי מכיל Personal Access Token. תבנית בטוחה: [.mcp.example.json](.mcp.example.json).
+## Main Routes
 
----
+| Route | Access | Purpose |
+| --- | --- | --- |
+| `/[locale]` | Public | Landing page and primary menu call to action. |
+| `/[locale]/menu` | Public | Product catalog, search, filters, and add to cart. |
+| `/[locale]/cart` | Signed-in checkout | Cart review and pickup or delivery order form. |
+| `/[locale]/orders` | Public lookup | Find orders by exact phone or email. |
+| `/[locale]/login` | Public | Sign in, sign up, and auth notices. |
+| `/[locale]/forgot-password` | Public | Request a password reset link. |
+| `/[locale]/reset-password` | Public | Set a new password from an auth link. |
+| `/[locale]/profile` | Signed in | Account details, saved address, and past orders. |
+| `/[locale]/chat` | Signed in | AI Gateway chat UI. |
+| `/[locale]/admin` | Admin | Admin dashboard shell. |
+| `/[locale]/admin/products` | Admin | Product CRUD, availability, stock, and images. |
+| `/[locale]/admin/orders` | Admin | Order list, filters, details, status, and payment. |
+| `/[locale]/admin/orders/[orderId]` | Admin | Mobile-friendly order detail route. |
+| `/[locale]/admin/customers` | Admin | Customer list and password reset links. |
+| `/[locale]/admin/analytics` | Admin | Revenue, status, product, and fulfillment charts. |
 
-## 📂 מבנה הפרויקט
+## Database And Supabase
+
+Database migrations live in `supabase/migrations`.
+
+The current schema includes:
+
+- `products` with category, availability, stock, low-stock threshold, and image.
+- `orders` with account ownership, customer details, pickup or delivery data,
+  total amount, status, and payment state.
+- `order_items` with product name and unit price snapshots.
+- `profiles` for customer contact and saved delivery address details.
+- `user_roles` for admin authorization.
+- Storage policies for product images.
+- RLS policies for public product reads, own-order reads, and admin access.
+- Admin-only RPCs for analytics aggregates.
+- Atomic stock decrement and increment functions for order creation rollback.
+
+The app uses Supabase server actions and server components for privileged work.
+Client code never receives the Supabase secret key.
+
+## Available Scripts
+
+| Script | Description |
+| --- | --- |
+| `npm run setup` | Runs the template setup script. Mostly for first install. |
+| `npm run dev` | Starts the Next.js dev server with Turbopack. |
+| `npm run build` | Creates a production build. |
+| `npm run start` | Serves the production build locally. |
+| `npm run lint` | Runs ESLint. |
+| `npm run format` | Formats TypeScript and TSX files with Prettier. |
+| `npm run typecheck` | Runs TypeScript without emitting files. |
+| `npm run test` | Runs Vitest once. |
+| `npm run test:watch` | Runs Vitest in watch mode. |
+| `npm run test:e2e` | Runs Playwright E2E tests. |
+
+## Testing
+
+The repository includes:
+
+- Unit tests for formatting, validation, cart utilities, filters, roles,
+  carriers, email rendering, rate limiting, and UI components.
+- Integration tests for product actions, order actions, order lookup, and admin
+  order actions.
+- Playwright E2E tests for customer ordering and admin order management.
+
+Recommended local verification:
 
 ```bash
-.
-├── app/                    # Next.js App Router
-│   ├── layout.tsx
-│   ├── page.tsx
-│   └── globals.css
-├── components/             # components שלך
-│   └── ui/                 # shadcn components (כל ה-components מותקנים מראש)
-├── hooks/                  # React hooks
-├── lib/                    # utilities (cn, וכו')
-├── public/                 # קבצים סטטיים
-├── scripts/
-│   └── setup.mjs           # סקריפט האתחול
-├── .claude/
-│   └── commands/
-│       ├── start-from-template.md   # /start-from-template — Supabase + MCP + UI
-│       ├── setup-github.md          # /setup-github — יצירת GitHub repo
-│       ├── setup-vercel.md          # /setup-vercel — CI/CD deploy דרך GitHub
-│       └── setup-vercel-ai.md       # /setup-vercel-ai — Vercel AI Gateway
-├── .agents/skills/         # Claude Code skills
-├── .env.example            # תבנית ל-environment variables
-└── .mcp.example.json       # תבנית ל-MCP (Supabase + Context7)
+npm run lint
+npm run typecheck
+npm run test
+npm run build
 ```
 
----
-
-## 🆘 בעיות נפוצות
-
-<details>
-<summary><b>Node version שגוי</b></summary>
-
-הטמפלייט דורש **Node 20+** (מומלץ 24 LTS). בדוק עם:
-```bash
-node --version
-```
-אם צריך, התקן nvm והרץ `nvm install 24`.
-</details>
-
-<details>
-<summary><b>npm run setup נכשל על git commit</b></summary>
-
-כנראה לא מוגדר לך `user.email` / `user.name` ב-git. הגדר:
-```bash
-git config --global user.name "השם שלך"
-git config --global user.email "email@example.com"
-```
-ואז הרץ שוב את הסקריפט או סתם הרץ `git commit` ידנית.
-</details>
-
-<details>
-<summary><b>Claude Code לא מותקן</b></summary>
+Run Playwright when browser-level coverage is needed:
 
 ```bash
-npm install -g @anthropic-ai/claude-code
+npm run test:e2e
 ```
-ואז `claude` בתיקיית הפרויקט.
-</details>
 
----
+## Project Structure
 
-## 📚 מקורות
+```text
+app/                      Next.js App Router routes
+app/[locale]/             Localized English and Hebrew pages
+app/api/chat/             Authenticated AI chat route
+components/               Shared, menu, cart, admin, order, and UI components
+i18n/                     next-intl routing and navigation helpers
+lib/                      Supabase, auth, products, orders, email, and utilities
+messages/                 English and Hebrew translation files
+supabase/migrations/      Database, RLS, storage, delivery, and analytics SQL
+__tests__/                Unit and integration tests
+e2e/                      Playwright tests
+docs/                     Assignment, planning, prompts, and template reference
+```
+
+## Admin Access
+
+Admin routes are protected server-side by `requireAdmin()` and backed by the
+`user_roles` table. To grant admin access, add an `admin` role row for the
+target Supabase Auth user.
+
+Example SQL:
+
+```sql
+insert into public.user_roles (user_id, role)
+values ('00000000-0000-0000-0000-000000000000', 'admin')
+on conflict do nothing;
+```
+
+Replace the UUID with the user's Supabase Auth ID.
+
+## Template Lineage
+
+The original AI Game Changer template provides the base setup for:
+
+- Next.js App Router.
+- shadcn/ui and Tailwind CSS.
+- Supabase configuration.
+- Claude Code commands, skills, and MCP-ready workflow.
+- Vercel AI Gateway.
+- GitHub and Vercel deployment flow.
+
+This repository keeps that foundation and layers the Mom's Bread bakery
+assignment implementation on top of it.
+
+## Resources
 
 - [Next.js Docs](https://nextjs.org/docs)
 - [shadcn/ui](https://ui.shadcn.com)
-- [Supabase](https://supabase.com/docs)
+- [Supabase Docs](https://supabase.com/docs)
 - [Vercel AI SDK](https://ai-sdk.dev)
-- [Claude Code](https://docs.claude.com/en/docs/claude-code)
-
----
-
-<div align="center">
-
-**Built with 💜 for Game Changer students**
-
-`Vibe Coding = Happy Coding 🎮`
-
-</div>
-
-</div>
+- [Claude Code Docs](https://docs.claude.com/en/docs/claude-code)
