@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 import { Link } from "@/i18n/navigation"
+import { resolveAuthMessage } from "@/lib/auth/resolve-auth-message"
 import { requestPasswordReset } from "./actions"
 import { CaptchaField } from "@/components/shared/captcha-field"
 import { Button } from "@/components/ui/button"
@@ -33,6 +34,10 @@ export default async function ForgotPasswordPage({
     searchParams,
   ])
 
+  // Actions redirect with `auth.*` codes; resolve to localized text for display.
+  const errorMessage = resolveAuthMessage(t, sp.error)
+  const noticeMessage = resolveAuthMessage(t, sp.notice)
+
   return (
     <div className="flex min-h-svh items-center justify-center bg-background px-4 text-foreground">
       <Card className="w-full max-w-sm">
@@ -59,13 +64,13 @@ export default async function ForgotPasswordPage({
 
             <CaptchaField />
 
-            {sp.error ? (
+            {errorMessage ? (
               <p className="text-sm text-destructive" role="alert">
-                {sp.error}
+                {errorMessage}
               </p>
             ) : null}
-            {sp.notice ? (
-              <p className="text-sm text-muted-foreground">{sp.notice}</p>
+            {noticeMessage ? (
+              <p className="text-sm text-muted-foreground">{noticeMessage}</p>
             ) : null}
 
             <Button type="submit" className="w-full">

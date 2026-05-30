@@ -51,11 +51,11 @@ function readCredentials(formData: FormData): Credentials | string {
     .toLowerCase()
   const password = String(formData.get("password") ?? "")
 
-  if (!email || !password) return "Email and password are required."
-  if (!isValidEmail(email)) return "Enter a valid email address."
-  if (password.length < MIN_PASSWORD_LENGTH) {
-    return `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`
-  }
+  // Returns an `auth.*` translation key, not a literal message, so the rendering
+  // page can localize it. The form pages map these codes via `t.has(code)`.
+  if (!email || !password) return "credentialsRequired"
+  if (!isValidEmail(email)) return "invalidEmail"
+  if (password.length < MIN_PASSWORD_LENGTH) return "passwordTooShort"
   return { email, password }
 }
 
@@ -67,7 +67,7 @@ function readCredentials(formData: FormData): Credentials | string {
 export async function login(formData: FormData) {
   const creds = readCredentials(formData)
   if (typeof creds === "string") {
-    redirect(`/login?error=${encodeURIComponent(creds)}`)
+    redirect(`/login?error=${creds}`)
   }
 
   // Record the "remember me" choice BEFORE signing in, so the cookie write
@@ -96,7 +96,7 @@ export async function login(formData: FormData) {
 
   if (error || !data.user) {
     // Generic message: do not reveal whether the email exists.
-    redirect(`/login?error=${encodeURIComponent("Invalid email or password.")}`)
+    redirect(`/login?error=invalidCredentials`)
   }
 
   await ensureProfile(data.user.id)
@@ -117,7 +117,7 @@ export async function login(formData: FormData) {
 export async function signup(formData: FormData) {
   const creds = readCredentials(formData)
   if (typeof creds === "string") {
-    redirect(`/login?tab=signup&error=${encodeURIComponent(creds)}`)
+    redirect(`/login?tab=signup&error=${creds}`)
   }
 
   // Absolute URL Supabase embeds in the confirmation email. Falls back to the
@@ -142,7 +142,10 @@ export async function signup(formData: FormData) {
   })
 
   if (error) {
-    redirect(`/login?tab=signup&error=${encodeURIComponent(error.message)}`)
+    // Supabase's message is dynamic and unbounded, so it cannot be a fixed
+    // translation key. Surface a localized generic error instead; the specific
+    // cause is still captured server-side in the Supabase logs.
+    redirect(`/login?tab=signup&error=signupFailed`)
   }
 
   // When the email already belongs to an account, Supabase (with email
@@ -151,11 +154,10 @@ export async function signup(formData: FormData) {
   // confirmation email. Promising "check your email" in that case strands the
   // user waiting for a mail that will never arrive. Keep the notice generic so
   // it neither confirms nor denies that the address is registered, while
-  // remaining accurate when no email was sent.
+  // remaining accurate when no email was sent. Both branches are translation
+  // keys resolved on the login page.
   const alreadyRegistered = data.user?.identities?.length === 0
-  const notice = alreadyRegistered
-    ? "If this is a new account, check your email to confirm it. If you already have an account, sign in or reset your password."
-    : "Check your email to confirm your account."
+  const notice = alreadyRegistered ? "accountMaybeExists" : "checkEmailToConfirm"
 
-  redirect(`/login?notice=${encodeURIComponent(notice)}`)
+  redirect(`/login?notice=${notice}`)
 }

@@ -20,9 +20,8 @@ export async function requestPasswordReset(formData: FormData) {
     .toLowerCase()
 
   if (!isValidEmail(email)) {
-    redirect(
-      `/forgot-password?error=${encodeURIComponent("Enter a valid email address.")}`
-    )
+    // `auth.*` translation key resolved on the forgot-password page.
+    redirect(`/forgot-password?error=invalidEmail`)
   }
 
   // Carried by the hidden field the Turnstile widget populates; empty when
@@ -41,9 +40,5 @@ export async function requestPasswordReset(formData: FormData) {
     captchaToken,
   })
 
-  redirect(
-    `/forgot-password?notice=${encodeURIComponent(
-      "If an account exists for that email, we've sent a reset link."
-    )}`
-  )
+  redirect(`/forgot-password?notice=resetLinkSent`)
 }

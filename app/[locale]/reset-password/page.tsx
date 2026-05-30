@@ -3,6 +3,7 @@ import { getTranslations, setRequestLocale } from "next-intl/server"
 
 import { redirect } from "@/i18n/navigation"
 import { createClient } from "@/lib/supabase/server"
+import { resolveAuthMessage } from "@/lib/auth/resolve-auth-message"
 import { setNewPassword } from "./actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -32,6 +33,10 @@ export default async function ResetPasswordPage({
     getTranslations("auth"),
     searchParams,
   ])
+
+  // The action redirects back with `?error=<code>`, where the code is an
+  // `auth.*` translation key. Resolve it in the active locale.
+  const errorMessage = resolveAuthMessage(t, sp.error)
 
   // The recovery link routes through /auth/confirm, which establishes a
   // session before redirecting here. Without one the link was invalid, expired,
@@ -69,9 +74,22 @@ export default async function ResetPasswordPage({
               />
             </div>
 
-            {sp.error ? (
+            <div className="grid gap-2">
+              <Label htmlFor="confirmPassword">{t("confirmPassword")}</Label>
+              <Input
+                id="confirmPassword"
+                name="confirmPassword"
+                type="password"
+                autoComplete="new-password"
+                required
+                minLength={8}
+                placeholder={t("passwordHint")}
+              />
+            </div>
+
+            {errorMessage ? (
               <p className="text-sm text-destructive" role="alert">
-                {sp.error}
+                {errorMessage}
               </p>
             ) : null}
 

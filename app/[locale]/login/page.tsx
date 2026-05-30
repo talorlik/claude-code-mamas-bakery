@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { getTranslations, setRequestLocale } from "next-intl/server"
 
 import { Link } from "@/i18n/navigation"
+import { resolveAuthMessage } from "@/lib/auth/resolve-auth-message"
 import { LoginTabs } from "./login-tabs"
 import {
   Card,
@@ -52,8 +53,8 @@ export default async function LoginPage({
         </CardHeader>
         <CardContent>
           <LoginTabs
-            error={sp.error}
-            notice={sp.notice}
+            error={resolveAuthMessage(t, sp.error) ?? undefined}
+            notice={resolveAuthMessage(t, sp.notice) ?? undefined}
             defaultTab={defaultTab}
             redirectTo={redirectTo}
           />

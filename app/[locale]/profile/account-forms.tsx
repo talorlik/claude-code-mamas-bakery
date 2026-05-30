@@ -257,8 +257,18 @@ function PasswordForm() {
   const [pending, setPending] = React.useState(false)
 
   async function onSubmit(formData: FormData) {
+    const password = String(formData.get("password") ?? "")
+    const confirmPassword = String(formData.get("confirmPassword") ?? "")
+
+    // Confirmation is a paired-input concern, so it is checked client-side
+    // before hitting the server; the action still enforces the length minimum.
+    if (password !== confirmPassword) {
+      setFeedback({ ok: false, message: tAuth("passwordsDoNotMatch") })
+      return
+    }
+
     setPending(true)
-    const result = await updatePassword(String(formData.get("password") ?? ""))
+    const result = await updatePassword(password)
     setPending(false)
     setFeedback(
       result.ok
@@ -280,6 +290,18 @@ function PasswordForm() {
             <Input
               id="password"
               name="password"
+              type="password"
+              autoComplete="new-password"
+              required
+              minLength={8}
+              placeholder={tAuth("passwordHint")}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="confirmPassword">{tAuth("confirmPassword")}</Label>
+            <Input
+              id="confirmPassword"
+              name="confirmPassword"
               type="password"
               autoComplete="new-password"
               required
