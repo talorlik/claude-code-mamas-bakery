@@ -2,6 +2,12 @@ import { createServerClient } from "@supabase/ssr"
 import { NextResponse, type NextRequest } from "next/server"
 
 import { routing } from "@/i18n/routing"
+import {
+  REMEMBER_FLAG,
+  SESSION_ONLY,
+  isAuthCookie,
+  stripPersistence,
+} from "@/lib/supabase/cookie-persistence"
 
 /**
  * Strips a leading locale segment (e.g. `/he/profile` -> `/profile`) so route
@@ -43,11 +49,23 @@ export async function updateSession(
           return request.cookies.getAll()
         },
         setAll(cookiesToSet) {
+          // When the user opted out of persistent login, strip expiry from the
+          // auth cookies on the response write (the Set-Cookie the browser
+          // receives). Without this, the per-request session refresh would
+          // silently re-persist a session-only login.
+          const sessionOnly =
+            request.cookies.get(REMEMBER_FLAG)?.value === SESSION_ONLY
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
           )
           cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options)
+            supabaseResponse.cookies.set(
+              name,
+              value,
+              sessionOnly && isAuthCookie(name)
+                ? stripPersistence(options)
+                : options
+            )
           )
         },
       },

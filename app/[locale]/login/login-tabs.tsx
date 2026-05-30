@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl"
 
 import { login, signup } from "./actions"
+import { Link } from "@/i18n/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -32,6 +33,7 @@ export function LoginTabs({ error, notice, defaultTab = "signin" }: Props) {
           autoCompletePassword="current-password"
           error={error}
           notice={notice}
+          showSignInExtras
         />
       </TabsContent>
 
@@ -56,6 +58,7 @@ function CredentialsForm({
   autoCompletePassword,
   error,
   notice,
+  showSignInExtras = false,
 }: {
   action: (formData: FormData) => Promise<void>
   submitLabel: string
@@ -63,6 +66,7 @@ function CredentialsForm({
   autoCompletePassword: "current-password" | "new-password"
   error?: string
   notice?: string
+  showSignInExtras?: boolean
 }) {
   const t = useTranslations("auth")
 
@@ -81,7 +85,17 @@ function CredentialsForm({
       </div>
 
       <div className="grid gap-2">
-        <Label htmlFor={`password-${formId}`}>{t("password")}</Label>
+        <div className="flex items-center justify-between gap-2">
+          <Label htmlFor={`password-${formId}`}>{t("password")}</Label>
+          {showSignInExtras ? (
+            <Link
+              href="/forgot-password"
+              className="text-sm text-muted-foreground hover:underline"
+            >
+              {t("forgotPassword")}
+            </Link>
+          ) : null}
+        </div>
         <Input
           id={`password-${formId}`}
           name="password"
@@ -92,6 +106,18 @@ function CredentialsForm({
           placeholder={t("passwordHint")}
         />
       </div>
+
+      {showSignInExtras ? (
+        <Label className="flex items-center gap-2 text-sm font-normal">
+          <input
+            type="checkbox"
+            name="remember"
+            defaultChecked
+            className="size-4 rounded border-input accent-primary"
+          />
+          {t("rememberMe")}
+        </Label>
+      ) : null}
 
       {error ? (
         <p className="text-sm text-destructive" role="alert">

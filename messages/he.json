@@ -39,7 +39,17 @@
     "createAccount": "יצירת חשבון",
     "email": "אימייל",
     "password": "סיסמה",
-    "passwordHint": "לפחות 8 תווים"
+    "passwordHint": "לפחות 8 תווים",
+    "rememberMe": "זכור אותי",
+    "forgotPassword": "שכחת סיסמה?",
+    "backToSignIn": "חזרה להתחברות",
+    "resetTitle": "איפוס הסיסמה",
+    "resetSubtitle": "הזינו את האימייל ונשלח לכם קישור לאיפוס.",
+    "sendResetLink": "שליחת קישור לאיפוס",
+    "resetLinkInvalid": "קישור האיפוס אינו תקין או שתוקפו פג.",
+    "newPassword": "סיסמה חדשה",
+    "newPasswordDescription": "בחרו סיסמה חדשה לחשבון שלכם.",
+    "setNewPassword": "הגדרת סיסמה חדשה"
   },
   "profile": {
     "title": "החשבון שלי",

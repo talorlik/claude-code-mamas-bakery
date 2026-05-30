@@ -3,6 +3,7 @@ import { type NextRequest, NextResponse } from "next/server"
 
 import { routing } from "@/i18n/routing"
 import { createClient } from "@/lib/supabase/server"
+import { REMEMBER_FLAG } from "@/lib/supabase/cookie-persistence"
 
 /**
  * Signs the current user out, clears the session cookies, flushes the
@@ -31,9 +32,13 @@ async function signOutAndRedirect(req: NextRequest): Promise<NextResponse> {
   )
     ? param
     : routing.defaultLocale
-  return NextResponse.redirect(new URL(`/${locale}/login`, req.url), {
+  const response = NextResponse.redirect(new URL(`/${locale}/login`, req.url), {
     status: 302,
   })
+  // Clear the "remember me" choice so a fresh login starts from the default
+  // persistent behavior rather than inheriting a prior session-only opt-out.
+  response.cookies.delete(REMEMBER_FLAG)
+  return response
 }
 
 /**

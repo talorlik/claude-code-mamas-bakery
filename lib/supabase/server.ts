@@ -1,6 +1,13 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 
+import {
+  REMEMBER_FLAG,
+  SESSION_ONLY,
+  isAuthCookie,
+  stripPersistence,
+} from "@/lib/supabase/cookie-persistence";
+
 export async function createClient() {
   const cookieStore = await cookies();
 
@@ -14,8 +21,20 @@ export async function createClient() {
         },
         setAll(cookiesToSet) {
           try {
+            // When the user opted out of persistent login, force the auth
+            // cookies to session scope on every write so they vanish on
+            // browser close. The flag is read fresh each call so a choice made
+            // earlier in the same request is honored.
+            const sessionOnly =
+              cookieStore.get(REMEMBER_FLAG)?.value === SESSION_ONLY;
             cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options),
+              cookieStore.set(
+                name,
+                value,
+                sessionOnly && isAuthCookie(name)
+                  ? stripPersistence(options)
+                  : options,
+              ),
             );
           } catch {
             // Called from a Server Component — middleware handles refresh.

@@ -39,7 +39,17 @@
     "createAccount": "Create account",
     "email": "Email",
     "password": "Password",
-    "passwordHint": "At least 8 characters"
+    "passwordHint": "At least 8 characters",
+    "rememberMe": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "backToSignIn": "Back to sign in",
+    "resetTitle": "Reset your password",
+    "resetSubtitle": "Enter your email and we'll send you a reset link.",
+    "sendResetLink": "Send reset link",
+    "resetLinkInvalid": "That reset link is invalid or has expired.",
+    "newPassword": "New password",
+    "newPasswordDescription": "Choose a new password for your account.",
+    "setNewPassword": "Set new password"
   },
   "profile": {
     "title": "My Account",
