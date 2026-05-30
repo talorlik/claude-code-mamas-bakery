@@ -32,7 +32,9 @@ export async function setNewPassword(formData: FormData) {
   if (!result.ok) {
     // `updatePassword` enforces the 8-char minimum; map its only field error to
     // the corresponding locale key, falling back to a generic update failure.
-    const code = result.fieldErrors?.password ? "passwordTooShort" : "updateFailed"
+    const code = result.fieldErrors?.password
+      ? "passwordTooShort"
+      : "updateFailed"
     redirect(`/reset-password?error=${code}`)
   }
 

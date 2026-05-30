@@ -16,9 +16,7 @@ test("signed-out checkout is gated behind sign-in", async ({ page }) => {
   await page.goto("/en/menu")
   await expect(page.getByRole("heading", { name: /our menu/i })).toBeVisible()
   // The My Orders link is hidden until the visitor signs in.
-  await expect(
-    page.getByRole("link", { name: /my orders/i })
-  ).toHaveCount(0)
+  await expect(page.getByRole("link", { name: /my orders/i })).toHaveCount(0)
 
   const addButtons = page.getByRole("button", { name: /add to cart/i })
   await expect(addButtons.first()).toBeVisible()

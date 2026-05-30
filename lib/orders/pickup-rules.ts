@@ -69,9 +69,7 @@ export function isPickupDateAllowed(
  */
 export function pickupDisabledMatcher(date: Date): boolean {
   const value = toDateString(
-    new Date(
-      Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
-    )
+    new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()))
   )
   return !isPickupDateAllowed(value)
 }

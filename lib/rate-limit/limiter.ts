@@ -16,7 +16,10 @@ import { Redis } from "@upstash/redis"
 export type RateLimitBucket = "auth" | "order" | "passwordReset"
 
 // Sliding-window limits per bucket: [requests, window].
-const BUCKET_CONFIG: Record<RateLimitBucket, { tokens: number; window: `${number} ${"s" | "m" | "h"}` }> = {
+const BUCKET_CONFIG: Record<
+  RateLimitBucket,
+  { tokens: number; window: `${number} ${"s" | "m" | "h"}` }
+> = {
   auth: { tokens: 10, window: "1 m" },
   order: { tokens: 5, window: "1 m" },
   passwordReset: { tokens: 3, window: "1 h" },

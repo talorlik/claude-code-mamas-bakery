@@ -29,10 +29,7 @@ export default async function ResetPasswordPage({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  const [t, sp] = await Promise.all([
-    getTranslations("auth"),
-    searchParams,
-  ])
+  const [t, sp] = await Promise.all([getTranslations("auth"), searchParams])
 
   // The action redirects back with `?error=<code>`, where the code is an
   // `auth.*` translation key. Resolve it in the active locale.

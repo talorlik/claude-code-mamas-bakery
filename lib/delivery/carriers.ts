@@ -42,7 +42,9 @@ export const DELIVERY_CARRIERS: readonly DeliveryCarrier[] = [
 ] as const
 
 /** Looks up a carrier by id, or returns null when the id is unknown. */
-export function getCarrier(id: string | null | undefined): DeliveryCarrier | null {
+export function getCarrier(
+  id: string | null | undefined
+): DeliveryCarrier | null {
   if (!id) return null
   return DELIVERY_CARRIERS.find((c) => c.id === id) ?? null
 }

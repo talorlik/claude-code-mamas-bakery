@@ -157,7 +157,9 @@ export async function signup(formData: FormData) {
   // remaining accurate when no email was sent. Both branches are translation
   // keys resolved on the login page.
   const alreadyRegistered = data.user?.identities?.length === 0
-  const notice = alreadyRegistered ? "accountMaybeExists" : "checkEmailToConfirm"
+  const notice = alreadyRegistered
+    ? "accountMaybeExists"
+    : "checkEmailToConfirm"
 
   redirect(`/login?notice=${notice}`)
 }

@@ -53,10 +53,7 @@ describe("order email templates", () => {
   })
 
   it("renders a localized status-update subject", () => {
-    const email = renderStatusUpdate(
-      data({ status: "Ready for Pickup" }),
-      "en"
-    )
+    const email = renderStatusUpdate(data({ status: "Ready for Pickup" }), "en")
     expect(email.subject).toContain("Ready for Pickup")
   })
 })

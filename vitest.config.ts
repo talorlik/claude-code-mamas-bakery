@@ -1,6 +1,6 @@
-import { fileURLToPath } from "node:url";
-import { defineConfig } from "vitest/config";
-import react from "@vitejs/plugin-react";
+import { fileURLToPath } from "node:url"
+import { defineConfig } from "vitest/config"
+import react from "@vitejs/plugin-react"
 
 /**
  * Vitest configuration for unit and integration tests.
@@ -24,4 +24,4 @@ export default defineConfig({
     include: ["__tests__/**/*.{test,spec}.{ts,tsx}"],
     exclude: ["e2e/**", "node_modules/**"],
   },
-});
+})

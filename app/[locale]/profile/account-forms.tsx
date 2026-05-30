@@ -104,11 +104,7 @@ function AddressForm({
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="grid gap-2">
               <Label htmlFor="city">{t("city")}</Label>
-              <Input
-                id="city"
-                name="city"
-                defaultValue={initialAddress.city}
-              />
+              <Input id="city" name="city" defaultValue={initialAddress.city} />
             </div>
             <div className="grid gap-2">
               <Label htmlFor="postalCode">{t("postalCode")}</Label>

@@ -79,12 +79,15 @@ function itemsHtml(data: OrderEmailData): string {
 
 function itemsText(data: OrderEmailData): string {
   return data.items
-    .map((i) => `- ${i.productName} x ${i.quantity}: ${formatPrice(i.lineTotal)}`)
+    .map(
+      (i) => `- ${i.productName} x ${i.quantity}: ${formatPrice(i.lineTotal)}`
+    )
     .join("\n")
 }
 
 function summaryHtml(data: OrderEmailData, t: Strings): string {
-  const dateLabel = data.fulfillmentMethod === "delivery" ? t.delivery : t.pickup
+  const dateLabel =
+    data.fulfillmentMethod === "delivery" ? t.delivery : t.pickup
   const feeRow =
     data.deliveryFee > 0
       ? `<p style="margin:4px 0;color:#6b7280;font-size:14px;">${t.deliveryFee}: ${formatPrice(data.deliveryFee)}</p>`
@@ -99,7 +102,8 @@ function summaryHtml(data: OrderEmailData, t: Strings): string {
 }
 
 function summaryText(data: OrderEmailData, t: Strings): string {
-  const dateLabel = data.fulfillmentMethod === "delivery" ? t.delivery : t.pickup
+  const dateLabel =
+    data.fulfillmentMethod === "delivery" ? t.delivery : t.pickup
   const feeLine =
     data.deliveryFee > 0
       ? `\n${t.deliveryFee}: ${formatPrice(data.deliveryFee)}`
@@ -124,8 +128,7 @@ export function renderOrderConfirmation(
   return {
     subject: t.confirmSubject(data.orderNumber),
     html: renderShell({ locale, heading: t.confirmHeading, body }),
-    text:
-      `${t.confirmIntro(data.customerName)}\n\n${summaryText(data, t)}`,
+    text: `${t.confirmIntro(data.customerName)}\n\n${summaryText(data, t)}`,
   }
 }
 
