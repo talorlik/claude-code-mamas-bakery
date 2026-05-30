@@ -29,10 +29,7 @@ export default async function ForgotPasswordPage({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  const [t, sp] = await Promise.all([
-    getTranslations("auth"),
-    searchParams,
-  ])
+  const [t, sp] = await Promise.all([getTranslations("auth"), searchParams])
 
   // Actions redirect with `auth.*` codes; resolve to localized text for display.
   const errorMessage = resolveAuthMessage(t, sp.error)
@@ -46,10 +43,7 @@ export default async function ForgotPasswordPage({
           <CardDescription>{t("resetSubtitle")}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form
-            action={requestPasswordReset}
-            className="flex flex-col gap-4"
-          >
+          <form action={requestPasswordReset} className="flex flex-col gap-4">
             <div className="grid gap-2">
               <Label htmlFor="email">{t("email")}</Label>
               <Input

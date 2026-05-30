@@ -247,11 +247,16 @@ export function ProductForm({
               ) : null}
             </div>
           ) : (
-            <p className="text-sm text-muted-foreground">{t("uploadAfterCreate")}</p>
+            <p className="text-sm text-muted-foreground">
+              {t("uploadAfterCreate")}
+            </p>
           )}
         </div>
 
-        <Label htmlFor="imageUrl" className="mt-2 text-xs text-muted-foreground">
+        <Label
+          htmlFor="imageUrl"
+          className="mt-2 text-xs text-muted-foreground"
+        >
           {t("imageUrl")}
         </Label>
         <Input

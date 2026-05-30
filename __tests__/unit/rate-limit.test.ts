@@ -20,9 +20,8 @@ describe("clientIpFromHeaders", () => {
 describe("checkRateLimit (no Upstash configured)", () => {
   it("allows requests and reports the limiter disabled", async () => {
     // No UPSTASH_REDIS_REST_URL/TOKEN in the test env, so the limiter no-ops.
-    const { checkRateLimit, isRateLimitEnabled } = await import(
-      "@/lib/rate-limit/limiter"
-    )
+    const { checkRateLimit, isRateLimitEnabled } =
+      await import("@/lib/rate-limit/limiter")
     expect(isRateLimitEnabled()).toBe(false)
     const result = await checkRateLimit("order", "1.2.3.4")
     expect(result).toEqual({ success: true, retryAfter: 0 })

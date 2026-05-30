@@ -53,7 +53,10 @@ export function AnalyticsCharts({
   return (
     <div className="grid gap-6">
       <div className="grid gap-4 sm:grid-cols-2">
-        <StatCard label={t("totalRevenue")} value={formatPrice(data.totalRevenue)} />
+        <StatCard
+          label={t("totalRevenue")}
+          value={formatPrice(data.totalRevenue)}
+        />
         <StatCard label={t("totalOrders")} value={String(data.totalOrders)} />
       </div>
 
@@ -70,9 +73,7 @@ export function AnalyticsCharts({
                 <CartesianGrid strokeDasharray="3 3" stroke="#e7ddd0" />
                 <XAxis dataKey="day" fontSize={12} />
                 <YAxis fontSize={12} />
-                <Tooltip
-                  formatter={(value) => formatPrice(Number(value))}
-                />
+                <Tooltip formatter={(value) => formatPrice(Number(value))} />
                 <Line
                   type="monotone"
                   dataKey="revenue"
@@ -126,10 +127,7 @@ export function AnalyticsCharts({
                     label
                   >
                     {fulfillmentData.map((_, i) => (
-                      <Cell
-                        key={i}
-                        fill={PIE_COLORS[i % PIE_COLORS.length]}
-                      />
+                      <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                     ))}
                   </Pie>
                   <Tooltip />

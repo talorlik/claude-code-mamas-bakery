@@ -158,9 +158,27 @@ const customer = {
 
 beforeEach(() => {
   products = [
-    { id: "a", name: "Challah", price: 18, is_available: true, stock_quantity: 100 },
-    { id: "b", name: "Babka", price: 45, is_available: true, stock_quantity: 100 },
-    { id: "c", name: "Tart", price: 55, is_available: false, stock_quantity: 100 },
+    {
+      id: "a",
+      name: "Challah",
+      price: 18,
+      is_available: true,
+      stock_quantity: 100,
+    },
+    {
+      id: "b",
+      name: "Babka",
+      price: 45,
+      is_available: true,
+      stock_quantity: 100,
+    },
+    {
+      id: "c",
+      name: "Tart",
+      price: 55,
+      is_available: false,
+      stock_quantity: 100,
+    },
     { id: "d", name: "Roll", price: 5, is_available: true, stock_quantity: 1 },
   ]
   insertedOrder = null

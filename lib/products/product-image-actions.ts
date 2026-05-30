@@ -76,7 +76,8 @@ export async function uploadProductImage(
     .from("products")
     .update({ image_url: imageUrl })
     .eq("id", productId)
-  if (updateError) return fail("Image uploaded but the product was not updated.")
+  if (updateError)
+    return fail("Image uploaded but the product was not updated.")
 
   revalidateProductPages()
   return ok({ imageUrl })

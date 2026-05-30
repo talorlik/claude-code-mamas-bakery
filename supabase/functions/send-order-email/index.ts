@@ -76,9 +76,9 @@ Deno.serve(async (req: Request) => {
     })
   } catch (err) {
     console.error("send-order-email error:", err)
-    return new Response(
-      JSON.stringify({ error: "Send failed" }),
-      { status: 500, headers: { "content-type": "application/json" } }
-    )
+    return new Response(JSON.stringify({ error: "Send failed" }), {
+      status: 500,
+      headers: { "content-type": "application/json" },
+    })
   }
 })

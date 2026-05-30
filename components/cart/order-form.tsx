@@ -139,9 +139,7 @@ export function OrderForm({
       />
 
       <fieldset className="grid gap-2">
-        <legend className="mb-1 text-sm font-medium">
-          {t("fulfillment")}
-        </legend>
+        <legend className="mb-1 text-sm font-medium">{t("fulfillment")}</legend>
         <div className="flex gap-2">
           <Button
             type="button"
@@ -224,7 +222,9 @@ export function OrderForm({
       ) : null}
 
       <div className="grid gap-2">
-        <Label>{method === "delivery" ? t("deliveryDate") : t("pickupDate")}</Label>
+        <Label>
+          {method === "delivery" ? t("deliveryDate") : t("pickupDate")}
+        </Label>
         <Calendar
           mode="single"
           required
@@ -234,9 +234,7 @@ export function OrderForm({
           startMonth={pickupDate}
           className="rounded-md border"
         />
-        <p className="text-sm text-muted-foreground">
-          {t("pickupClosedNote")}
-        </p>
+        <p className="text-sm text-muted-foreground">{t("pickupClosedNote")}</p>
         {fieldErrors?.pickupDate ? (
           <p className="text-sm text-destructive">{fieldErrors.pickupDate}</p>
         ) : null}

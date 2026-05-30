@@ -37,9 +37,7 @@ export async function getOrdersForUser(
  * gates it for admins, and the route is guarded by `requireAdmin`. Returns null
  * when the order does not exist or is not readable.
  */
-export async function getOrderById(
-  id: string
-): Promise<OrderWithItems | null> {
+export async function getOrderById(id: string): Promise<OrderWithItems | null> {
   const supabase = await createClient()
   const { data, error } = await supabase
     .from("orders")

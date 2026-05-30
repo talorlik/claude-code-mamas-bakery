@@ -1,15 +1,15 @@
-import { createServerClient } from "@supabase/ssr";
-import { cookies } from "next/headers";
+import { createServerClient } from "@supabase/ssr"
+import { cookies } from "next/headers"
 
 import {
   REMEMBER_FLAG,
   SESSION_ONLY,
   isAuthCookie,
   stripPersistence,
-} from "@/lib/supabase/cookie-persistence";
+} from "@/lib/supabase/cookie-persistence"
 
 export async function createClient() {
-  const cookieStore = await cookies();
+  const cookieStore = await cookies()
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -17,7 +17,7 @@ export async function createClient() {
     {
       cookies: {
         getAll() {
-          return cookieStore.getAll();
+          return cookieStore.getAll()
         },
         setAll(cookiesToSet) {
           try {
@@ -26,27 +26,27 @@ export async function createClient() {
             // browser close. The flag is read fresh each call so a choice made
             // earlier in the same request is honored.
             const sessionOnly =
-              cookieStore.get(REMEMBER_FLAG)?.value === SESSION_ONLY;
+              cookieStore.get(REMEMBER_FLAG)?.value === SESSION_ONLY
             cookiesToSet.forEach(({ name, value, options }) =>
               cookieStore.set(
                 name,
                 value,
                 sessionOnly && isAuthCookie(name)
                   ? stripPersistence(options)
-                  : options,
-              ),
-            );
+                  : options
+              )
+            )
           } catch {
             // Called from a Server Component — middleware handles refresh.
           }
         },
       },
-    },
-  );
+    }
+  )
 }
 
 export async function createAdminClient() {
-  const cookieStore = await cookies();
+  const cookieStore = await cookies()
 
   return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -54,12 +54,12 @@ export async function createAdminClient() {
     {
       cookies: {
         getAll() {
-          return cookieStore.getAll();
+          return cookieStore.getAll()
         },
         setAll() {
           // Admin client does not persist sessions.
         },
       },
-    },
-  );
+    }
+  )
 }
