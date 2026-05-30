@@ -41,9 +41,12 @@ even though pages are not individually reworked until their own spec.
 ## Decisions (from brainstorming)
 
 - **Imagery**: Unsplash stock placeholders now, treated as swap-later.
-  `next.config.ts` already permits all HTTPS image hosts
-  (`remotePatterns: hostname: "**"`), so no config change is needed. The
-  product card already uses `next/image`.
+  The product card renders a **plain `<img>`** (not `next/image`) by
+  design - `image_url` is admin-supplied and arbitrary, so the existing
+  code deliberately avoids maintaining a remote-host allowlist in
+  `next.config.ts` (which currently has no image config). This spec keeps
+  that approach; no `next.config.ts` change. When Unsplash placeholders
+  are wired into pages (Specs 2-3), they use the same plain-`<img>` path.
 - **Bilingual**: EN-first, HE follows. All new/changed styling uses
   logical CSS properties (Tailwind logical utilities: `ms-`/`me-`,
   `ps-`/`pe-`, `start-`/`end-`, `text-start`/`text-end`) so RTL is
@@ -127,9 +130,9 @@ implementation and verified by eye against the approved mockup.
 - Load **Fraunces** via `next/font/google` in `app/[locale]/layout.tsx`,
   exposed as `--font-fraunces`, alongside the existing Inter
   (`--font-inter`) and Geist Mono.
-- In `app/globals.css` `@theme inline`, add a heading font token:
-  `--font-heading: var(--font-fraunces)`. Keep `--font-sans` ->
-  `--font-inter` for body/UI.
+- In `app/globals.css` `@theme inline`, **repoint** the existing
+  `--font-heading` token (currently `var(--font-sans)`) to
+  `var(--font-fraunces)`. Keep `--font-sans` for body/UI.
 - A base-layer rule sets `h1, h2, h3` (and a `.font-display` utility) to
   `--font-heading`. Body text stays Inter via the existing
   `body { ... }` rule. This means heading elements across the app pick up
@@ -187,13 +190,13 @@ photography, compact text, no shadow, minimal metadata.
 
 | File | Change |
 | --- | --- |
-| `app/globals.css` | Remap semantic tokens (`:root` + `.dark`) to the brand palette; add `--font-heading` token; add base rule applying serif to headings + `.font-display`. |
+| `app/globals.css` | Remap semantic tokens (`:root` + `.dark`) to brand palette; repoint existing `--font-heading` to Fraunces; add base rule applying serif to headings + `.font-display`. |
 | `app/[locale]/layout.tsx` | Load Fraunces via `next/font/google`; add its variable to `<body>` className. |
 | `components/shared/site-header.tsx` | Serif wordmark; logical-property audit; verify token inheritance. |
 | `components/menu/product-card.tsx` | Borderless minimal card; serif name; plain price; warm icon fallback; logical spacing. |
 
-No new dependencies. No `next.config.ts` change (image hosts already
-open). No data, auth, routing, or i18n-message changes.
+No new dependencies. No `next.config.ts` change. No data, auth,
+routing, or i18n-message changes.
 
 ## Error Handling / Edge Cases
 
