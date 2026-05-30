@@ -137,7 +137,7 @@ export function CartView({
                   {t("signInToOrder")}
                 </p>
                 <Link
-                  href="/login?redirect=/cart"
+                  href={{ pathname: "/login", query: { redirect: "/cart" } }}
                   className={buttonVariants()}
                 >
                   {t("signIn")}
