@@ -29,3 +29,28 @@ export async function getOrdersForUser(
     return { ...order, items: order_items ?? [] }
   })
 }
+
+/**
+ * Returns every order, newest first, each with its line items, for the admin
+ * order list.
+ *
+ * Reads through the server client; the "Admins can read orders" RLS policy
+ * permits this for admin callers, and the page is already guarded by
+ * `requireAdmin`. Returns an empty array on error.
+ */
+export async function getAllOrders(): Promise<OrderWithItems[]> {
+  const supabase = await createClient()
+  const { data, error } = await supabase
+    .from("orders")
+    .select("*, order_items(*)")
+    .order("created_at", { ascending: false })
+
+  if (error || !data) return []
+
+  return data.map((row) => {
+    const { order_items, ...order } = row as typeof row & {
+      order_items: OrderWithItems["items"]
+    }
+    return { ...order, items: order_items ?? [] }
+  })
+}
