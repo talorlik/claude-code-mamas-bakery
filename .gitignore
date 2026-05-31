@@ -63,3 +63,6 @@ context-practice-files/
 
 # Supabase CLI local session state
 supabase/.temp/
+
+# superpowers brainstorm sessions
+.superpowers/
