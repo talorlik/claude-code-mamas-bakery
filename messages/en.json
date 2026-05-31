@@ -24,7 +24,49 @@
     "description": "Order fresh challah, cakes, and sweets from Mom's Bread.",
     "tagline": "Fresh from the oven, made to order.",
     "browseMenu": "Browse the menu",
-    "getStarted": "Get started"
+    "getStarted": "Get started",
+    "hero": {
+      "eyebrow": "Atelier Bakery",
+      "title": "Baked with care, served with love.",
+      "body": "Fresh pastries, crafted every morning.",
+      "ctaMenu": "Browse the menu",
+      "ctaStory": "Our story"
+    },
+    "signature": {
+      "eyebrow": "Signature collection",
+      "title": "This week from the oven",
+      "sub": "Freshly baked and made to order — a small selection of what's available this week.",
+      "viewAll": "View full menu"
+    },
+    "principles": {
+      "eyebrow": "Our craft",
+      "handmadeTitle": "Handmade",
+      "handmadeBody": "Shaped by hand, every single day.",
+      "fermentationTitle": "Long fermentation",
+      "fermentationBody": "Slow-risen for flavour and texture.",
+      "ingredientsTitle": "Local ingredients",
+      "ingredientsBody": "Sourced from producers we trust."
+    },
+    "seasonal": {
+      "eyebrow": "Seasonal feature",
+      "title": "Strawberry Mille-Feuille",
+      "body": "Layers of crisp pastry, pastry cream, and fresh strawberries. Available for a limited time.",
+      "cta": "Order now"
+    },
+    "about": {
+      "eyebrow": "Our bakery",
+      "statement": "We wake before dawn so your morning begins with something beautiful.",
+      "cta": "Read our story"
+    },
+    "visit": {
+      "eyebrow": "Visit us",
+      "locationLabel": "Location",
+      "locationValue": "12 Baker Street, Tel Aviv",
+      "hoursLabel": "Hours",
+      "hoursValue": "Sun–Thu 07:00–18:00",
+      "contactLabel": "Contact",
+      "contactValue": "hello@atelierbakery.co.il"
+    }
   },
   "errorPage": {
     "title": "Something went wrong",
@@ -230,6 +272,12 @@
     "deleted": "Product deleted.",
     "error": "Something went wrong."
   },
+  "footer": {
+    "tagline": "Crafted daily. Presented with precision.",
+    "menu": "Menu",
+    "about": "About",
+    "rights": "All rights reserved."
+  },
   "adminOrders": {
     "title": "Orders",
     "heading": "Order Management",
@@ -258,5 +306,12 @@
     "empty": "No orders match your filters.",
     "saved": "Updated.",
     "error": "Something went wrong."
+  },
+  "about": {
+    "title": "Our Story",
+    "lead": "Baked with love, served with care.",
+    "body": "Atelier Bakery was born from a simple belief: that extraordinary bread and pastries start with exceptional ingredients and unhurried craft. Every loaf, every croissant, every tart is shaped by hand and allowed the time it needs to become itself.",
+    "ingredientsEyebrow": "Ingredients & Craft",
+    "ingredientsBody": "We source heritage grains from local farms, use only cultured butter, and leaven everything with a sourdough starter that has been alive in our kitchen for over a decade. Nothing artificial. Nothing rushed."
   }
 }

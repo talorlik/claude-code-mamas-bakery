@@ -9,6 +9,7 @@ import "../globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { CartProvider } from "@/components/cart/cart-provider"
 import { SiteHeader } from "@/components/shared/site-header"
+import { SiteFooter } from "@/components/shared/site-footer"
 import { Toaster } from "@/components/ui/sonner"
 import { routing, LOCALE_DIRECTION, type AppLocale } from "@/i18n/routing"
 import { cn } from "@/lib/utils"
@@ -93,6 +94,7 @@ export default async function LocaleLayout({
             <CartProvider>
               <SiteHeader />
               {children}
+              <SiteFooter />
               <Toaster
                 richColors
                 position={dir === "rtl" ? "top-left" : "top-right"}
