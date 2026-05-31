@@ -1,14 +1,19 @@
-import { ArrowRight, Croissant } from "lucide-react"
-import { getTranslations, setRequestLocale } from "next-intl/server"
+import { setRequestLocale } from "next-intl/server"
 
-import { Link } from "@/i18n/navigation"
-import { Badge } from "@/components/ui/badge"
-import { buttonVariants } from "@/components/ui/button"
+import type { Locale } from "@/lib/orders/order-formatting"
+import { getAvailableProducts } from "@/lib/products/product-queries"
+import { HeroSection } from "@/components/home/hero-section"
+import { SignatureCollection } from "@/components/home/signature-collection"
+import { ArtisanPrinciples } from "@/components/home/artisan-principles"
+import { SeasonalFeature } from "@/components/home/seasonal-feature"
+import { AboutBlurb } from "@/components/home/about-blurb"
+import { VisitSection } from "@/components/home/visit-section"
 
 /**
- * Bakery landing page. The shared header (nav, language, theme, auth state)
- * lives in the locale layout, so this page focuses on the hero and primary
- * call to action. All copy is localized.
+ * Atelier Bakery homepage: an editorial landing page. Server-fetches the
+ * newest available products for the Signature Collection and composes the
+ * section components in order. Shared header/footer live in the locale
+ * layout. All copy is localized; the page itself holds no marketing strings.
  */
 export default async function HomePage({
   params,
@@ -17,28 +22,18 @@ export default async function HomePage({
 }) {
   const { locale } = await params
   setRequestLocale(locale)
-  const t = await getTranslations("home")
+
+  const products = await getAvailableProducts()
+  const signature = products.slice(0, 3)
 
   return (
-    <main className="mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center gap-8 px-6 py-24 text-center">
-      <Badge variant="secondary" className="rounded-full">
-        <Croissant className="me-1 h-4 w-4" />
-        {t("tagline")}
-      </Badge>
-
-      <div className="space-y-4">
-        <h1 className="text-4xl font-semibold tracking-tight sm:text-6xl">
-          {t("title")}
-        </h1>
-        <p className="mx-auto max-w-xl text-base text-muted-foreground sm:text-lg">
-          {t("description")}
-        </p>
-      </div>
-
-      <Link href="/menu" className={buttonVariants({ size: "lg" })}>
-        {t("browseMenu")}
-        <ArrowRight className="ms-1 h-4 w-4 rtl:rotate-180" />
-      </Link>
+    <main className="flex-1">
+      <HeroSection />
+      <SignatureCollection products={signature} locale={locale as Locale} />
+      <ArtisanPrinciples />
+      <SeasonalFeature />
+      <AboutBlurb />
+      <VisitSection />
     </main>
   )
 }
