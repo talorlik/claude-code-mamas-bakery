@@ -24,7 +24,13 @@
     "description": "Order fresh challah, cakes, and sweets from Mom's Bread.",
     "tagline": "Fresh from the oven, made to order.",
     "browseMenu": "Browse the menu",
-    "getStarted": "Get started"
+    "getStarted": "Get started",
+    "signature": {
+      "eyebrow": "Signature collection",
+      "title": "This week from the oven",
+      "sub": "Freshly baked and made to order — a small selection of what's available this week.",
+      "viewAll": "View full menu"
+    }
   },
   "errorPage": {
     "title": "Something went wrong",
@@ -229,6 +235,12 @@
     "saved": "Saved.",
     "deleted": "Product deleted.",
     "error": "Something went wrong."
+  },
+  "footer": {
+    "tagline": "Crafted daily. Presented with precision.",
+    "menu": "Menu",
+    "about": "About",
+    "rights": "All rights reserved."
   },
   "adminOrders": {
     "title": "Orders",
