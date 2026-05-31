@@ -9,20 +9,17 @@ import { categoryLabel } from "@/lib/products/product-formatting"
 import type { Locale } from "@/lib/orders/order-formatting"
 import { formatPrice } from "@/lib/utils/format"
 import { useCart } from "@/components/cart/cart-provider"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 
 /**
- * Menu product card: image (or a placeholder), name, category, description,
- * price, and an add-to-cart button. Adding dispatches into the cart context
- * and confirms with a toast.
+ * Menu product card (Atelier Bakery): photo-forward and borderless. Strong
+ * 4:3 image, compact text below. Name in the display serif, description in
+ * secondary text, plain-text price next to an add-to-cart button. Adding
+ * dispatches into the cart context and confirms with a toast.
+ *
+ * The image is a plain <img> (not next/image) because image_url is
+ * admin-supplied and arbitrary; this avoids maintaining a remote-host
+ * allowlist in next.config.
  */
 export function ProductCard({
   product,
@@ -47,16 +44,14 @@ export function ProductCard({
   }
 
   return (
-    <Card className="flex flex-col overflow-hidden">
-      <div className="relative aspect-[4/3] w-full bg-muted">
+    <div className="group flex flex-col">
+      <div className="relative aspect-[4/3] w-full overflow-hidden rounded-md bg-card">
         {product.image_url ? (
-          // Plain img (not next/image): image_url is admin-supplied and arbitrary,
-          // so this avoids maintaining a remote-host allowlist in next.config.
           // eslint-disable-next-line @next/next/no-img-element
           <img
             src={product.image_url}
             alt={product.name}
-            className="h-full w-full object-cover"
+            className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             loading="lazy"
           />
         ) : (
@@ -66,28 +61,35 @@ export function ProductCard({
         )}
       </div>
 
-      <CardHeader>
-        <div className="flex items-start justify-between gap-2">
-          <CardTitle className="text-base">{product.name}</CardTitle>
-          <Badge variant="secondary" className="shrink-0">
+      <div className="mt-3 flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="font-display text-base font-medium leading-snug">
+            {product.name}
+          </h3>
+          <p className="mt-0.5 text-xs uppercase tracking-wide text-muted-foreground">
             {categoryLabel(product.category, locale)}
-          </Badge>
+          </p>
         </div>
-      </CardHeader>
+        <span className="shrink-0 text-sm font-medium tabular-nums">
+          {formatPrice(product.price)}
+        </span>
+      </div>
 
-      <CardContent className="flex-1">
-        {product.description ? (
-          <p className="text-sm text-muted-foreground">{product.description}</p>
-        ) : null}
-      </CardContent>
+      {product.description ? (
+        <p className="mt-2 line-clamp-2 text-lg text-muted-foreground">
+          {product.description}
+        </p>
+      ) : null}
 
-      <CardFooter className="flex items-center justify-between gap-2">
-        <span className="font-semibold">{formatPrice(product.price)}</span>
-        <Button size="sm" onClick={handleAdd}>
-          <Plus className="me-1 h-4 w-4" />
-          {t("addToCart")}
-        </Button>
-      </CardFooter>
-    </Card>
+      <Button
+        size="sm"
+        variant="outline"
+        onClick={handleAdd}
+        className="mt-3 self-start"
+      >
+        <Plus className="me-1 h-4 w-4" />
+        {t("addToCart")}
+      </Button>
+    </div>
   )
 }
