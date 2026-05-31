@@ -26,7 +26,9 @@ export function SignatureCollection({
         <p className="text-xs font-semibold tracking-[0.2em] text-accent uppercase">
           {t("eyebrow")}
         </p>
-        <h2 className="mt-3 text-3xl font-light tracking-tight">{t("title")}</h2>
+        <h2 className="mt-3 text-3xl font-light tracking-tight">
+          {t("title")}
+        </h2>
         <p className="mt-2 text-muted-foreground">{t("sub")}</p>
 
         {products.length > 0 ? (

@@ -14,7 +14,7 @@ export function AboutBlurb() {
         <p className="text-xs font-semibold tracking-[0.2em] text-accent uppercase">
           {t("eyebrow")}
         </p>
-        <p className="mt-6 font-display text-2xl leading-relaxed font-light">
+        <p className="font-display mt-6 text-2xl leading-relaxed font-light">
           {t("statement")}
         </p>
         <Link

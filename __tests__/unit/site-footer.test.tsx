@@ -9,8 +9,19 @@ import enMessages from "@/messages/en.json"
 // resolve cleanly under jsdom. Stub the locale-aware Link so tests can render
 // the footer without a Next.js runtime.
 vi.mock("@/i18n/navigation", () => ({
-  Link: ({ href, children, className }: { href: string; children: React.ReactNode; className?: string }) =>
-    <a href={href} className={className}>{children}</a>,
+  Link: ({
+    href,
+    children,
+    className,
+  }: {
+    href: string
+    children: React.ReactNode
+    className?: string
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
 }))
 
 function renderFooter() {
@@ -24,7 +35,9 @@ function renderFooter() {
 describe("SiteFooter", () => {
   it("renders the footer tagline and a menu link", () => {
     renderFooter()
-    expect(screen.getByText("Crafted daily. Presented with precision.")).toBeInTheDocument()
+    expect(
+      screen.getByText("Crafted daily. Presented with precision.")
+    ).toBeInTheDocument()
     expect(screen.getByRole("link", { name: "Menu" })).toBeInTheDocument()
   })
 

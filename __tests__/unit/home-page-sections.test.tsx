@@ -25,7 +25,11 @@ vi.mock("@/i18n/navigation", () => ({
     href: string
     children: React.ReactNode
     className?: string
-  }) => <a href={href} className={className}>{children}</a>,
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
 }))
 
 describe("home page sections compose without error", () => {
@@ -42,7 +46,9 @@ describe("home page sections compose without error", () => {
         </CartProvider>
       </NextIntlClientProvider>
     )
-    expect(screen.getByText("Fresh pastries, crafted every morning.")).toBeInTheDocument()
+    expect(
+      screen.getByText("Fresh pastries, crafted every morning.")
+    ).toBeInTheDocument()
     expect(screen.getByText("Handmade")).toBeInTheDocument()
     expect(screen.getByText("Strawberry Mille-Feuille")).toBeInTheDocument()
   })

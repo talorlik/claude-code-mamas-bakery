@@ -30,7 +30,7 @@ export default async function AboutPage({
       <h1 className="font-display text-4xl font-light tracking-tight">
         {t("title")}
       </h1>
-      <p className="mt-6 font-display text-2xl font-light text-muted-foreground">
+      <p className="font-display mt-6 text-2xl font-light text-muted-foreground">
         {t("lead")}
       </p>
       <p className="mt-6 text-lg leading-relaxed text-muted-foreground">
@@ -41,7 +41,7 @@ export default async function AboutPage({
         <p className="text-xs font-semibold tracking-[0.2em] text-accent uppercase">
           {t("ingredientsEyebrow")}
         </p>
-        <p className="mt-4 font-display text-xl font-light leading-relaxed">
+        <p className="font-display mt-4 text-xl leading-relaxed font-light">
           {t("ingredientsBody")}
         </p>
       </div>

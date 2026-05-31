@@ -21,7 +21,11 @@ vi.mock("@/i18n/navigation", () => ({
     href: string
     children: React.ReactNode
     className?: string
-  }) => <a href={href} className={className}>{children}</a>,
+  }) => (
+    <a href={href} className={className}>
+      {children}
+    </a>
+  ),
 }))
 
 const products: Product[] = [
@@ -55,13 +59,17 @@ describe("SignatureCollection", () => {
     renderSection(products)
     expect(screen.getByText("This week from the oven")).toBeInTheDocument()
     expect(screen.getByText("Classic Challah")).toBeInTheDocument()
-    expect(screen.getByRole("link", { name: /view full menu/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole("link", { name: /view full menu/i })
+    ).toBeInTheDocument()
   })
 
   it("renders the heading and link but no products when empty", () => {
     renderSection([])
     expect(screen.getByText("This week from the oven")).toBeInTheDocument()
     expect(screen.queryByText("Classic Challah")).not.toBeInTheDocument()
-    expect(screen.getByRole("link", { name: /view full menu/i })).toBeInTheDocument()
+    expect(
+      screen.getByRole("link", { name: /view full menu/i })
+    ).toBeInTheDocument()
   })
 })

@@ -21,7 +21,10 @@ export function ArtisanPrinciples() {
         </p>
         <div className="mt-10 grid gap-8 sm:grid-cols-3">
           {items.map((item) => (
-            <div key={item.title} className="flex flex-col items-center text-center">
+            <div
+              key={item.title}
+              className="flex flex-col items-center text-center"
+            >
               <div className="flex aspect-square w-44 flex-col items-center justify-center rounded-full border border-border bg-background p-6">
                 <h3 className="font-display text-lg">{item.title}</h3>
                 <p className="mt-2 max-w-[18ch] text-sm text-muted-foreground">
