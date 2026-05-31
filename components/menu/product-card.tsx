@@ -63,10 +63,10 @@ export function ProductCard({
 
       <div className="mt-3 flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <h3 className="font-display text-base font-medium leading-snug">
+          <h3 className="font-display text-base leading-snug font-medium">
             {product.name}
           </h3>
-          <p className="mt-0.5 text-xs uppercase tracking-wide text-muted-foreground">
+          <p className="mt-0.5 text-xs tracking-wide text-muted-foreground uppercase">
             {categoryLabel(product.category, locale)}
           </p>
         </div>
