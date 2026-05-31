@@ -1,5 +1,6 @@
 import type { Metadata } from "next"
-import { Fraunces, Geist_Mono, Inter } from "next/font/google"
+import { Geist_Mono, Inter } from "next/font/google"
+import localFont from "next/font/local"
 import { notFound } from "next/navigation"
 import { hasLocale, NextIntlClientProvider } from "next-intl"
 import { setRequestLocale, getTranslations } from "next-intl/server"
@@ -16,12 +17,21 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
 
 // Fraunces: high-contrast serif for editorial display/headings (Atelier
-// Bakery). Body and UI stay on Inter. opsz lets the optical size scale with
-// the large display sizes used on marketing pages.
-const fraunces = Fraunces({
-  subsets: ["latin"],
+// Bakery). Body and UI stay on Inter. Self-hosted (next/font/local) rather
+// than next/font/google: under Next 16 + Turbopack the Google loader emitted
+// no CSS for this face, leaving headings on the Inter fallback. The variable
+// woff2 (full 300-600 weight + opsz axes, latin) lives in app/fonts and has
+// no build-time network dependency.
+const fraunces = localFont({
+  src: [
+    {
+      path: "../fonts/fraunces-latin.woff2",
+      style: "normal",
+      weight: "300 600",
+    },
+  ],
+  display: "swap",
   variable: "--font-fraunces",
-  weight: ["300", "400", "500", "600"],
 })
 
 /**
