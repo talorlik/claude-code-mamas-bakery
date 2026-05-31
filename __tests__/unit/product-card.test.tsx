@@ -57,4 +57,17 @@ describe("ProductCard", () => {
     await user.click(screen.getByRole("button", { name: /add to cart/i }))
     expect(screen.getByTestId("count")).toHaveTextContent("1")
   })
+
+  it("renders the product name in the display serif", () => {
+    renderCard()
+    const name = screen.getByText("Classic Challah")
+    expect(name.className).toContain("font-display")
+  })
+
+  it("uses a borderless card (no border utility on the root)", () => {
+    const { container } = renderCard()
+    const root = container.firstElementChild as HTMLElement
+    expect(root.className).not.toContain("border")
+    expect(root.className).not.toContain("shadow")
+  })
 })

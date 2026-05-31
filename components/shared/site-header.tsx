@@ -28,7 +28,10 @@ export async function SiteHeader() {
     <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
         <nav className="flex items-center gap-4 text-sm">
-          <Link href="/" className="font-semibold">
+          <Link
+            href="/"
+            className="font-display text-lg font-medium tracking-tight"
+          >
             {t("home")}
           </Link>
           <Link href="/menu" className="hover:underline">
