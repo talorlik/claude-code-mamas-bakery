@@ -149,6 +149,18 @@ Scale is encoded as the Tailwind utility steps the components already
 use; no bespoke scale system. Hero/Display sizes are applied by pages in
 their own specs, not here.
 
+> [!NOTE]
+> **Open question for Spec 3 (menu page):** applying "Product
+> description 18px" (`text-lg`) literally on the compact menu product
+> card makes the description outsize the product name (`text-base`,
+> 16px), inverting the visual hierarchy. DESIGN.md also calls the card
+> "Compact text", so the 18px size likely belongs to featured/editorial
+> blocks (hero, seasonal feature), not the compact card. Resolve in
+> Spec 3 against the approved homepage/menu mockups: either scope 18px
+> to featured contexts and keep the card name as the dominant element,
+> or raise the card name above the description. The Spec 1
+> implementation is spec-literal on purpose; do not change it here.
+
 ## Proof Surfaces (the only components restyled in this spec)
 
 ### Site header / nav (`components/shared/site-header.tsx`)
