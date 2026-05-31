@@ -1,5 +1,5 @@
 import type { Metadata } from "next"
-import { Geist_Mono, Inter } from "next/font/google"
+import { Fraunces, Geist_Mono, Inter } from "next/font/google"
 import { notFound } from "next/navigation"
 import { hasLocale, NextIntlClientProvider } from "next-intl"
 import { setRequestLocale, getTranslations } from "next-intl/server"
@@ -14,6 +14,15 @@ import { cn } from "@/lib/utils"
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" })
 const fontMono = Geist_Mono({ subsets: ["latin"], variable: "--font-mono" })
+
+// Fraunces: high-contrast serif for editorial display/headings (Atelier
+// Bakery). Body and UI stay on Inter. opsz lets the optical size scale with
+// the large display sizes used on marketing pages.
+const fraunces = Fraunces({
+  subsets: ["latin"],
+  variable: "--font-fraunces",
+  weight: ["300", "400", "500", "600"],
+})
 
 /**
  * Pre-render both locales at build time.
@@ -63,6 +72,7 @@ export default async function LocaleLayout({
       className={cn(
         "antialiased",
         fontMono.variable,
+        fraunces.variable,
         "font-sans",
         inter.variable
       )}
